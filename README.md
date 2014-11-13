@@ -8,6 +8,10 @@ Steps:
 3) git commit -m "COMMIT MESSAGE"
 4) git push
 
+IF you are a commit ahead,
+git reset --hard HEAD, then git pull
+
+
 TESTS:
 Commit Test 
 
