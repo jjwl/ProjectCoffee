@@ -11,6 +11,9 @@ Steps:
 IF you are a commit ahead,
 git reset --hard HEAD, then git pull
 
+Not using the Windows:
+git clone https://user:pass@github.com/jjwl/ProjectCoffee.git
+
 
 TESTS:
 Commit Test 
