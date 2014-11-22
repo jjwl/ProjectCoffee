@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- From: file:/C:/Users/Sheng-Han%20Chen/Documents/GitHub/ProjectCoffee/WiFiDirectServiceDiscovery/app/src/main/res/values/strings.xml -->
+    <eat-comment/>
+    <string name="app_name">Wi-Fi Discovery</string>
+    <string name="btn_send">Send</string>
+    <string name="finding_service">Finding local services</string>
+    <string name="txt_hint">Type Message</string>
+    <!-- From: file:/C:/Users/Sheng-Han%20Chen/Documents/GitHub/ProjectCoffee/WiFiDirectServiceDiscovery/app/src/main/res/values/style.xml -->
+    <eat-comment/>
+    <style name="boldText">
+        <item name="android:textStyle">bold|italic</item>
+        <item name="android:textColor">#99CC00</item>
+    </style>
+    <style name="normalText">
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#33B5E5</item>
+    </style>
+</resources>
