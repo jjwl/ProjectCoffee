@@ -1,0 +1,2 @@
+INDEX VERSION 1.127+C:\Users\Sheng-Han Chen\Documents\GitHub\ProjectCoffee\.metadata\.plugins\org.eclipse.jdt.core
+4043747150.index
