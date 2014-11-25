@@ -1,5 +1,6 @@
 package com.coffee.tableapplication;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -11,6 +12,8 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.ActionListener;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.ChannelListener;
+import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -21,16 +24,21 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.coffee.tableapplication.DeviceListFragment.DeviceActionListener;
+import com.coffee.tableapplication.DeviceListFragment.WiFiPeerListAdapter;
 
+import java.util.Map;
 
 public class TableDiscoveryActivity extends Activity implements ChannelListener, DeviceActionListener {
         public static final String TAG = "tableActivity";
+        private static final String DEVICE_SERVICE = "deviceService";
         private WifiP2pManager manager;
         private boolean isWifiP2pEnabled = false;
         private boolean retryChannel = false;
         private final IntentFilter intentFilter = new IntentFilter();
         private Channel channel;
         private BroadcastReceiver receiver = null;
+        private WifiP2pDnsSdServiceRequest serviceRequest;
+
         /**
          * @param isWifiP2pEnabled the isWifiP2pEnabled to set
          */
@@ -126,6 +134,74 @@ public class TableDiscoveryActivity extends Activity implements ChannelListener,
                     return super.onOptionsItemSelected(item);
             }
         }
+
+    private void discoverService() {
+        /*
+         * Register listeners for DNS-SD services. These are callbacks invoked
+         * by the system when a service is actually discovered.
+         */
+        manager.setDnsSdResponseListeners(channel,
+                new WifiP2pManager.DnsSdServiceResponseListener() {
+                    @Override
+                    public void onDnsSdServiceAvailable(String instanceName,
+                                                        String registrationType, WifiP2pDevice srcDevice) {
+                        // A service has been discovered. Is this our app?
+                        if (instanceName.equalsIgnoreCase(DEVICE_SERVICE)) {
+                            // update the UI and add the item the discovered
+                            // device.
+                            DeviceListFragment fragment = (DeviceListFragment) getFragmentManager()
+                                    .findFragmentByTag("services");
+                            if (fragment != null) {
+                                WiFiPeerListAdapter adapter = ((WiFiPeerListAdapter) fragment
+                                        .getListAdapter());
+                                adapter.add(srcDevice);
+                                adapter.notifyDataSetChanged();
+                                Log.d(TAG, "onBonjourServiceAvailable "
+                                        + instanceName);
+                            }
+                        }
+                    }
+                }, new WifiP2pManager.DnsSdTxtRecordListener() {
+                    /**
+                     * A new TXT record is available. Pick up the advertised
+                     * buddy name.
+                     */
+                    @Override
+                    public void onDnsSdTxtRecordAvailable(
+                            String fullDomainName, Map<String, String> record,
+                            WifiP2pDevice device) {
+                  //      Log.d(TAG,
+                   //             device.deviceName + " is "
+                   //                     + record.get(TXTRECORD_PROP_AVAILABLE));
+                    }
+                });
+        // After attaching listeners, create a service request and initiate
+        // discovery.
+        serviceRequest = WifiP2pDnsSdServiceRequest.newInstance();
+        manager.addServiceRequest(channel, serviceRequest,
+                new ActionListener() {
+                    @Override
+                    public void onSuccess() {
+                        //appendStatus("Added service discovery request");
+                    }
+                    @Override
+                    public void onFailure(int arg0) {
+                        //appendStatus("Failed adding service discovery request");
+                    }
+                });
+        manager.discoverServices(channel, new ActionListener() {
+            @Override
+            public void onSuccess() {
+                //appendStatus("Service discovery initiated");
+            }
+            @Override
+            public void onFailure(int arg0) {
+                //appendStatus("Service discovery failed");
+            }
+        });
+    }
+
+
         @Override
         public void showDetails(WifiP2pDevice device) {
             DeviceDetailFragment fragment = (DeviceDetailFragment) getFragmentManager()
