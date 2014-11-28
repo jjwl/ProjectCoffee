@@ -13,4 +13,4 @@
         android:title="@string/discover_peers_button"
         android:showAsAction="ifRoom|withText" />
 </menu>
-<!-- From: file:/C:/Users/Sheng-Han%20Chen/Documents/GitHub/ProjectCoffee/WiFiDirectDemo/app/src/main/res/menu/action_items.xml -->
+<!-- From: file:/C:/Users/Sheng-Han/Documents/Coding/ProjectCoffee/WiFiDirectDemo/app/src/main/res/menu/action_items.xml -->

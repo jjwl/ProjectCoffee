@@ -12,6 +12,7 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.ActionListener;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.ChannelListener;
+import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,11 +27,14 @@ import android.widget.Toast;
 import com.coffee.tableapplication.DeviceListFragment.DeviceActionListener;
 import com.coffee.tableapplication.DeviceListFragment.WiFiPeerListAdapter;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class TableDiscoveryActivity extends Activity implements ChannelListener, DeviceActionListener {
         public static final String TAG = "tableActivity";
-        private static final String DEVICE_SERVICE = "deviceService";
+        private static final String DEVICE_SERVICE = "_tableService";
+        public static final String SERVICE_INSTANCE = "_tableService";
+        public static final String SERVICE_REG_TYPE = "_presence._tcp";
         private WifiP2pManager manager;
         private boolean isWifiP2pEnabled = false;
         private boolean retryChannel = false;
@@ -51,11 +55,12 @@ public class TableDiscoveryActivity extends Activity implements ChannelListener,
             setContentView(R.layout.main);
             // add necessary intent values to be matched.
             intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
-            intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
-            intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
             intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
+
             manager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
             channel = manager.initialize(this, getMainLooper(), null);
+
+            startRegistrationAndDiscovery();
         }
         /** register the BroadcastReceiver with the intent values to be matched */
         @Override
@@ -117,12 +122,13 @@ public class TableDiscoveryActivity extends Activity implements ChannelListener,
                     final DeviceListFragment fragment = (DeviceListFragment) getFragmentManager()
                             .findFragmentById(R.id.frag_list);
                     fragment.onInitiateDiscovery();
-                    manager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
+                    manager.discoverServices(channel, new ActionListener() {
                         @Override
                         public void onSuccess() {
                             Toast.makeText(TableDiscoveryActivity.this, "Discovery Initiated",
                                     Toast.LENGTH_SHORT).show();
                         }
+
                         @Override
                         public void onFailure(int reasonCode) {
                             Toast.makeText(TableDiscoveryActivity.this, "Discovery Failed : " + reasonCode,
@@ -135,6 +141,28 @@ public class TableDiscoveryActivity extends Activity implements ChannelListener,
             }
         }
 
+    private void startRegistrationAndDiscovery() {
+        Map<String, String> record = new HashMap<String, String>();
+
+        WifiP2pDnsSdServiceInfo service = WifiP2pDnsSdServiceInfo.newInstance(
+                SERVICE_INSTANCE, SERVICE_REG_TYPE, record);
+        manager.addLocalService(channel, service, new ActionListener() {
+
+            @Override
+            public void onSuccess() {
+                //appendStatus("Added Local Service");
+            }
+
+            @Override
+            public void onFailure(int error) {
+                //appendStatus("Failed to add a service");
+            }
+        });
+
+        discoverService();
+
+    }
+
     private void discoverService() {
         /*
          * Register listeners for DNS-SD services. These are callbacks invoked
@@ -146,14 +174,14 @@ public class TableDiscoveryActivity extends Activity implements ChannelListener,
                     public void onDnsSdServiceAvailable(String instanceName,
                                                         String registrationType, WifiP2pDevice srcDevice) {
                         // A service has been discovered. Is this our app?
+                        Log.d(TAG, "Service Available: " + instanceName);
                         if (instanceName.equalsIgnoreCase(DEVICE_SERVICE)) {
                             // update the UI and add the item the discovered
                             // device.
-                            DeviceListFragment fragment = (DeviceListFragment) getFragmentManager()
-                                    .findFragmentByTag("services");
+                            DeviceListFragment fragment = (DeviceListFragment) getFragmentManager().findFragmentById(R.id.frag_list);
                             if (fragment != null) {
-                                WiFiPeerListAdapter adapter = ((WiFiPeerListAdapter) fragment
-                                        .getListAdapter());
+                                WiFiPeerListAdapter adapter = (WiFiPeerListAdapter) fragment
+                                        .getListAdapter();
                                 adapter.add(srcDevice);
                                 adapter.notifyDataSetChanged();
                                 Log.d(TAG, "onBonjourServiceAvailable "

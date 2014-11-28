@@ -78,4 +78,4 @@
         android:layout_height="match_parent"
         android:text="@string/empty_message" />
 </LinearLayout>
-<!-- From: file:/C:/Users/Sheng-Han%20Chen/Documents/GitHub/ProjectCoffee/WiFiDirectDemo/app/src/main/res/layout/device_list.xml -->
+<!-- From: file:/C:/Users/Sheng-Han/Documents/Coding/ProjectCoffee/WiFiDirectDemo/app/src/main/res/layout/device_list.xml -->

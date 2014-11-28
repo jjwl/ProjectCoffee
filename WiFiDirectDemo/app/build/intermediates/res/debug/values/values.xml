@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/C:/Users/Sheng-Han%20Chen/Documents/GitHub/ProjectCoffee/WiFiDirectDemo/app/src/main/res/values/colors.xml -->
+    <!-- From: file:/C:/Users/Sheng-Han/Documents/Coding/ProjectCoffee/WiFiDirectDemo/app/src/main/res/values/colors.xml -->
     <eat-comment/>
     <color name="layout_border_color">#FF111111</color>
     <color name="status_bar_color">#FF000000</color>
-    <!-- From: file:/C:/Users/Sheng-Han%20Chen/Documents/GitHub/ProjectCoffee/WiFiDirectDemo/app/src/main/res/values/dimens.xml -->
+    <!-- From: file:/C:/Users/Sheng-Han/Documents/Coding/ProjectCoffee/WiFiDirectDemo/app/src/main/res/values/dimens.xml -->
     <eat-comment/>
     <dimen name="phone_list_height">200dp</dimen>
     <dimen name="tablet_list_width">300dp</dimen>
-    <!-- From: file:/C:/Users/Sheng-Han%20Chen/Documents/GitHub/ProjectCoffee/WiFiDirectDemo/app/src/main/res/values/strings.xml -->
+    <!-- From: file:/C:/Users/Sheng-Han/Documents/Coding/ProjectCoffee/WiFiDirectDemo/app/src/main/res/values/strings.xml -->
     <eat-comment/>
     <string name="app_name">WiFi Direct</string>
     <string name="client_text">This device will act as a client. Click on Gallery button to pick a local(stored) file</string>
