@@ -17,7 +17,7 @@
         android:label="@string/app_name"
         android:theme="@android:style/Theme.Holo">
         <activity
-            android:name="com.coffee.deviceapplication.TableDiscoveryActivity"
+            android:name="com.coffee.tableapplication.TableDiscoveryActivity"
             android:label="@string/app_name" android:launchMode="singleTask">
             <intent-filter>
                 <action
