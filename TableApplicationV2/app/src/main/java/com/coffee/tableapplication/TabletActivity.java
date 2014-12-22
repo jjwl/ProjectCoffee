@@ -74,6 +74,21 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
             @Override
             public void onClick(View v) {
                 //Start Content Master thread.
+                manager.discoverServices(channel, new WifiP2pManager.ActionListener() {
+
+                    @Override
+                    public void onSuccess() {
+                        //appendStatus("Service discovery initiated");
+                        Log.d(TabletActivity.TAG, "Service discovery initiated.");
+                    }
+
+                    @Override
+                    public void onFailure(int arg0) {
+                        //appendStatus("Service discovery failed");
+                        Log.d(TabletActivity.TAG, "Service discovery failed.");
+
+                    }
+                });
             }
         });
 
