@@ -12,7 +12,6 @@ import java.net.Socket;
  * Created by Sheng-Han on 12/22/2014.
  */
 public class ClientSocketHandler extends Thread {
-
     private static final String TAG = "ClientSocketHandler";
     private Handler handler;
     private MsgManager chat;
@@ -31,7 +30,7 @@ public class ClientSocketHandler extends Thread {
             socket.connect(new InetSocketAddress(mAddress.getHostAddress(),
                     DeviceDiscoveryActivity.SERVER_PORT), 5000);
             Log.d(TAG, "Launching the I/O handler");
-            chat = new MsgManager(socket, handler);
+            chat = MsgManager.getInstance().init(socket, handler);
             new Thread(chat).start();
         } catch (IOException e) {
             e.printStackTrace();

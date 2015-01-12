@@ -36,9 +36,6 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
         public static final String SERVICE_REG_TYPE = "_presence._tcp";
         public static final int SERVER_PORT = 4545;
 
-        public static final int MESSAGE_READ = 0x400 + 1;
-        public static final int MY_HANDLE = 0x400 + 2;
-
         private WifiP2pManager manager;
         private boolean isWifiP2pEnabled = false;
         private boolean retryChannel = false;
@@ -94,6 +91,16 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
         public void onPause() {
             super.onPause();
             unregisterReceiver(receiver);
+        }
+        @Override
+        protected void onStart() {
+            MsgManager.getInstance().updateHandler(myHandler, manager, channel);
+            super.onStop();
+        }
+        @Override
+        protected void onStop() {
+            MsgManager.getInstance().stop();
+            super.onStop();
         }
 
         @Override
@@ -261,41 +268,15 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
     @Override
     public boolean handleMessage(Message msg) {
         switch (msg.what) {
-            case MESSAGE_READ:
+            case MsgManager.MESSAGE_READ:
                 byte[] readBuf = (byte[]) msg.obj;
                 // construct a string from the valid bytes in the buffer
                 String readMessage = new String(readBuf, 0, msg.arg1);
                 Log.d(TAG, readMessage);
                 break;
 
-            case MY_HANDLE:
-                Object obj = msg.obj;
-                msgManager = (MsgManager) obj;
+            case MsgManager.CONNECTION_SUCCESS:
                 //Only when the entire thing has completed connection, go to welcome screen.
-                setContentView(R.layout.activity_welcome_screen);
-                Button kudosBtn = (Button)findViewById(R.id.goKudosBtn);
-                kudosBtn.setOnClickListener(new Button.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        setContentView(R.layout.activity_kudos);
-                        Button sendKudos = (Button)findViewById(R.id.kudosBtn);
-                        sendKudos.setOnClickListener(new Button.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                msgManager.write("Kudos".getBytes());
-                                Toast.makeText(DeviceDiscoveryActivity.this, "Kudos Sent!", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                });
-
-                Button queueBtn = (Button)findViewById(R.id.goQueueBtn);
-                queueBtn.setOnClickListener(new Button.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        setContentView(R.layout.activity_queue);
-                    }
-                });
                 break;
         }
         return true;

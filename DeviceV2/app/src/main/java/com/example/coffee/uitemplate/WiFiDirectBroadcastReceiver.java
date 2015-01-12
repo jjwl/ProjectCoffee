@@ -1,4 +1,5 @@
 package com.example.coffee.uitemplate;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,14 +16,14 @@ import android.util.Log;
 public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
     private WifiP2pManager manager;
     private Channel channel;
-    private DeviceDiscoveryActivity activity;
+    private Activity activity;
     /**
      * @param manager WifiP2pManager system service
      * @param channel Wifi p2p channel
      * @param activity activity associated with the receiver
      */
     public WiFiDirectBroadcastReceiver(WifiP2pManager manager, Channel channel,
-                                       DeviceDiscoveryActivity activity) {
+                                       Activity activity) {
         super();
         this.manager = manager;
         this.channel = channel;
