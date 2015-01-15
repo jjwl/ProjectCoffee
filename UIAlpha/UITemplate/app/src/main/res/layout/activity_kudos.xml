@@ -1,0 +1,36 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.example.vy.uitemplate.Kudos"
+    android:background="#4b4b4b"
+    android:id="@+id/kudosMode">
+
+    <TextView android:text="Now Playing" android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/nowPlaying"
+        android:textColor="#ffffff"
+        android:textSize="55dp"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:paddingStart="10dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Kudos"
+        android:id="@+id/kudosBtn"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="98dp"
+        android:textColor="#ffffff"
+        android:background="#66cdf7"
+        android:clickable="true"
+        android:textSize="35dp"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:onClick="@string/title_activity_kudos" />
+
+</RelativeLayout>
