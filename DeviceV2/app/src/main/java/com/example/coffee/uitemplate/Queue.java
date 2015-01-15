@@ -98,6 +98,7 @@ public class Queue extends Activity implements Handler.Callback {
                 byte[] readBuf = (byte[]) msg.obj;
                 // construct a string from the valid bytes in the buffer
                 String readMessage = new String(readBuf, 0, msg.arg1);
+                msgManager.handleMsg(this, readMessage);
                 Log.d(TAG, readMessage);
                 break;
 

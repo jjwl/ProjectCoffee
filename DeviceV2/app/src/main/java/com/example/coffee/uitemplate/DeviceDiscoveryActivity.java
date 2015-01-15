@@ -277,6 +277,8 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
 
             case MsgManager.CONNECTION_SUCCESS:
                 //Only when the entire thing has completed connection, go to welcome screen.
+
+                startActivity(new Intent(this, WelcomeScreen.class));
                 break;
         }
         return true;
