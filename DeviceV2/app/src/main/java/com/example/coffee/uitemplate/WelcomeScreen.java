@@ -34,14 +34,14 @@ public class WelcomeScreen extends Activity implements Handler.Callback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome_screen);
         msgManager = MsgManager.getInstance();
-
-        Button kudosBtn = (Button)findViewById(R.id.goKudosBtn);
-        kudosBtn.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(WelcomeScreen.this, Kudos.class));
-            }
-        });
+//
+//        Button kudosBtn = (Button)findViewById(R.id.goKudosBtn);
+////        kudosBtn.setOnClickListener(new Button.OnClickListener() {
+////            @Override
+////            public void onClick(View v) {
+////                startActivity(new Intent(WelcomeScreen.this, Kudos.class));
+////            }
+////        });
 
         Button queueBtn = (Button)findViewById(R.id.goQueueBtn);
         queueBtn.setOnClickListener(new Button.OnClickListener() {

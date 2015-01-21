@@ -1,7 +1,10 @@
 package com.example.coffee.uitemplate;
 
 import android.app.Activity;
+import android.os.Build;
+import android.os.Bundle;
 import android.bluetooth.BluetoothClass;
+import android.content.Intent;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Handler;
 import android.util.Log;
@@ -23,6 +26,7 @@ public class MsgManager implements Runnable {
     private Handler handler = null; //Current Activity Handler; Changed each time the activity changes.
     private WifiP2pManager manager;
     private WifiP2pManager.Channel channel;
+//    private Context context;
     private int mStartCount = 0;
 
     private MsgManager() {
@@ -103,8 +107,20 @@ public class MsgManager implements Runnable {
 
     //Process All Your Messages Here - I pass every Message_read handle_message to here.
     public boolean handleMsg(Activity current, String message) {
+
+        if(message.substring(0,13).equals("ContentMaster")){
+            //Build.DEVICE or Build.MODEL
+            if(message.substring(14).equals(Build.DEVICE)){
+            //CM Loop
+                current.startActivity(new Intent(current, Queue.class));
+            }else{
+            //Kudos Loop
+                current.startActivity(new Intent(current, Kudos.class));
+            }
+        }
         return true;
     }
+
 
     public void stop() {
         mStartCount--;

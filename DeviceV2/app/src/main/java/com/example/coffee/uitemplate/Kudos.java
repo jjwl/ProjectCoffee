@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.util.Timer;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -38,7 +39,9 @@ public class Kudos extends Activity  implements WifiP2pManager.ChannelListener, 
 
     private Handler myHandler = new Handler(this);
     private MsgManager msgManager = null;
-
+    private long currentTime = 0;
+    private long pastTime = 0;
+    private int kudosDelay = 10;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,10 +64,19 @@ public class Kudos extends Activity  implements WifiP2pManager.ChannelListener, 
         kudosBtn.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                        MsgManager.getInstance().write("Kudos".getBytes());
-                        Toast.makeText(Kudos.this, "Kudos Sent!", Toast.LENGTH_SHORT).show();
+                currentTime = System.currentTimeMillis();
+                if(currentTime - pastTime >= (kudosDelay * 1000)) {
+                    MsgManager.getInstance().write("Kudos".getBytes());
+                    Toast.makeText(Kudos.this, "Kudos Sent!", Toast.LENGTH_SHORT).show();
+                    pastTime = System.currentTimeMillis();
+                }
             }
         });
+        currentTime = System.currentTimeMillis();
+        if(currentTime >= (pastTime + kudosDelay * 1000)) {
+            MsgManager.getInstance().write("Kudos".getBytes());
+            Toast.makeText(Kudos.this, "Kudos Sent!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

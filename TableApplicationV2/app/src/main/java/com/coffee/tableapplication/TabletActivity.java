@@ -28,6 +28,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class TabletActivity extends Activity implements WifiP2pManager.ConnectionInfoListener, Handler.Callback{
@@ -49,7 +52,11 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
     private Handler handler = new Handler(this);
     private MsgManager msgManager = null;
     private UsersListAdapter adapter;
+    private Timer timer = null;
 
+    private int minutes = 2;
+    private int nextCM = 0;
+    private Random rand = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +73,8 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
         channel = manager.initialize(this, getMainLooper(), null);
 
         Button playBtn = (Button)findViewById(R.id.playBtn);
+
+        msgManager = MsgManager.getInstance();
 
         adapter = new UsersListAdapter(this, android.R.layout.simple_list_item_2, android.R.id.text1,  new ArrayList<WifiP2pDevice>());
         ListView userList = (ListView) findViewById(R.id.regList);
@@ -89,6 +98,25 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
 
                     }
                 });
+
+
+                timer = new Timer();
+                rand = new Random();
+                nextCM = rand.nextInt(adapter.getSize());
+
+                while(true){
+                    timer.schedule( new TimerTask() {
+                        public void run() {
+                            nextCM++;
+                            if(nextCM + 1 == adapter.getSize()){
+                                nextCM = 0;
+                            }
+                            MsgManager.getInstance().write(("ContentMaster" + adapter.getItemName(nextCM)).getBytes());
+                        }
+                    }, 0, 60*1000*minutes);
+                }
+
+
             }
         });
 
@@ -266,7 +294,6 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                 return;
             }
         }
-
     }
 
     @Override

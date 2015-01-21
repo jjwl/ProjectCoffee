@@ -13,9 +13,12 @@ import java.net.Socket;
  * Created by Sheng-Han on 12/6/2014.
  */
 public class MsgManager implements Runnable {
-
+    private static MsgManager msgManager = null;
     private Socket socket = null;
     private Handler handler;
+
+    private MsgManager() {
+    }
 
     public MsgManager(Socket socket, Handler handler) {
         this.socket = socket;
@@ -25,6 +28,15 @@ public class MsgManager implements Runnable {
     private InputStream iStream;
     private OutputStream oStream;
     private static final String TAG = "MsgHandler";
+
+    public static MsgManager getInstance() {
+        if(msgManager == null) {
+            msgManager = new MsgManager();
+        }
+
+        return msgManager;
+    }
+
 
     @Override
     public void run() {
