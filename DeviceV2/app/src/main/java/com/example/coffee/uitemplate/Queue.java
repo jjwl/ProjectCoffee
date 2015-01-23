@@ -33,6 +33,8 @@ public class Queue extends Activity implements Handler.Callback {
 
     public LinkedList<String> contentQueue;
 
+    private int drawableId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +69,10 @@ public class Queue extends Activity implements Handler.Callback {
     public void checkQueue() {
         //should return the head of the queue or null if the queue is empty
         contentQueue.peek();
+    }
+
+    public int getDrawableId() {
+        return drawableId;
     }
 
     @Override
