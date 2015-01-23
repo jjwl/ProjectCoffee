@@ -102,7 +102,7 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
 
                 timer = new Timer();
                 rand = new Random();
-                nextCM = rand.nextInt(adapter.getSize());
+                nextCM = rand.nextInt(adapter.getSize() - 1);
 
                 while(true){
                     timer.schedule( new TimerTask() {
