@@ -56,7 +56,7 @@ public class Queue extends Activity implements Handler.Callback {
     public void createContentQueue() {
         contentQueue = new LinkedList<String>();
         showToast("Queue created.");
->>>>>>> 6612411418db11df902bc1f3fca52dea2d33f19a
+//>>>>>>> 6612411418db11df902bc1f3fca52dea2d33f19a
     }
 
     public void addToQueue(String url) {
