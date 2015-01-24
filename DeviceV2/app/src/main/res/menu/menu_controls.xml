@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item android:id="@+id/control_item_submit_video"
+        android:title="@string/submit_video" />
+
+    <item android:id="@+id/control_item_submit_video_from_time"
+        android:title="@string/submit_video_from_time" />
+
+</menu>

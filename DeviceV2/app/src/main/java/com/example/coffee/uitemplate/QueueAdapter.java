@@ -1,6 +1,8 @@
 package com.example.coffee.uitemplate;
 
 import java.util.LinkedList;
+import java.util.List;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,48 +14,46 @@ import android.widget.TextView;
 public class QueueAdapter extends BaseAdapter{
 
     Context context;
+    private List<Video> videoQueue;
 
-    private LinkedList<String> contentQueue;
-    LayoutInflater inflater;
-
-    public QueueAdapter(Context context, LinkedList<String> contentQueue) {
-        this.contentQueue = contentQueue;
-        this.inflater = LayoutInflater.from(context);
+    public QueueAdapter(Context context, List<Video> videos) {
         this.context = context;
+        this.videoQueue = videos;
     }
 
+    @Override
     public int getCount() {
-        return contentQueue.size();
+        return this.videoQueue.size();
     }
 
-    public String getItem(int position) {
-        return contentQueue.get(position);
+    @Override
+    public Object getItem(int position) {
+        return this.videoQueue.get(position);
     }
 
+    @Override
     public long getItemId(int position) {
-        return contentQueue.get(position).getDrawableId();
+        return position;
     }
 
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View v = convertView
+        VideoView videoView = null;
+
         if (convertView == null) {
-            LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = vi.inflate(R.layout.row, null);
+            videoView = new VideoView(this.context, this.videoQueue.get(position));
+        }
+        else {
+            videoView = (VideoView) convertView;
         }
 
-        String urlInQueue = contentQueue.get(position);
-        if (urlInQueue != null) {
-            TextView tt = (TextView) v.findViewById(R.id.toptext);
-            TextView bt = (TextView) v.findViewById(R.id.bottomtext);
-            if (tt != null) {
-                tt.setText("Content Title: ");
-            }
-            if (bt != null) {
-                bt.setText("Other relevant about content here.");
-                //Will have a better idea of how to work with these after I put in the youtube stuff
-            }
-        }
+        videoView.setVideo(this.videoQueue.get(position));
 
-        return convertView;
+        return videoView;
+    }
+
+    public void clearAdapter() {
+        this.videoQueue.clear();
+        notifyDataSetChanged();
     }
 }
