@@ -49,11 +49,18 @@ public class UsersListAdapter extends ArrayAdapter<WifiP2pDevice> {
 
     }
 
-    public String getItemName(int index){
-        return items.get(index).deviceName;
+    public String getItemName(int index) { return items.get(index).deviceName;}
+
+    public String getItemAddress(int index){
+        return items.get(index).deviceAddress;
     }
 
     public int getSize(){
         return items.size();
+    }
+
+    public void updateKudos(String contentMaster){
+
+
     }
 }

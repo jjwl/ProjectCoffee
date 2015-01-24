@@ -54,7 +54,7 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
     private UsersListAdapter adapter;
     private Timer timer = null;
 
-    private int minutes = 2;
+    private int roundTime = 2; //time in between rounds in minutes
     private int nextCM = 0;
     private Random rand = null;
     @Override
@@ -111,9 +111,9 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                             if(nextCM + 1 == adapter.getSize()){
                                 nextCM = 0;
                             }
-                            MsgManager.getInstance().write(("ContentMaster" + adapter.getItemName(nextCM)).getBytes());
+                            MsgManager.getInstance().write(("ContentMaster" + adapter.getItemAddress(nextCM)).getBytes());
                         }
-                    }, 0, 60*1000*minutes);
+                    }, 0, 60*1000*roundTime);
                 }
 
 
@@ -306,6 +306,7 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                 Log.d(TAG, readMessage);
                 if(readMessage.contains("Kudos")) {
                     Toast.makeText(this, readMessage, Toast.LENGTH_LONG).show();
+                    adapter.updateKudos(adapter.getItemAddress(nextCM));
                 }
                 break;
 
