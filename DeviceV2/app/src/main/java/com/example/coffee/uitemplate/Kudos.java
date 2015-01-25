@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
 import android.os.Bundle;
@@ -28,7 +29,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 
 
-public class Kudos extends Activity  implements WifiP2pManager.ChannelListener, Handler.Callback{
+public class Kudos extends Activity  implements WifiP2pManager.ChannelListener, Handler.Callback, WifiP2pManager.ConnectionInfoListener{
     public static final String TAG = "tableActivity";
 
     private WifiP2pManager manager;
@@ -97,9 +98,9 @@ public class Kudos extends Activity  implements WifiP2pManager.ChannelListener, 
         super.onStop();
     }
     @Override
-    protected void onStop() {
+    protected void onDestroy() {
         MsgManager.getInstance().stop();
-        super.onStop();
+        super.onDestroy();
     }
 
     @Override
@@ -146,6 +147,11 @@ public class Kudos extends Activity  implements WifiP2pManager.ChannelListener, 
 
     @Override
     public void onChannelDisconnected() {
+
+    }
+
+    @Override
+    public void onConnectionInfoAvailable(WifiP2pInfo info) {
 
     }
 }

@@ -59,9 +59,9 @@ public class WelcomeScreen extends Activity implements Handler.Callback {
         super.onStop();
     }
     @Override
-    protected void onStop() {
+    protected void onDestroy() {
         MsgManager.getInstance().stop();
-        super.onStop();
+        super.onDestroy();
     }
 
     @Override

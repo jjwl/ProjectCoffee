@@ -98,9 +98,9 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
             super.onStop();
         }
         @Override
-        protected void onStop() {
+        protected void onDestroy() {
             MsgManager.getInstance().stop();
-            super.onStop();
+            super.onDestroy();
         }
 
         @Override

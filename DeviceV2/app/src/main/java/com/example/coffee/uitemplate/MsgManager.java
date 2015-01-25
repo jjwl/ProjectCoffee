@@ -33,9 +33,10 @@ public class MsgManager implements Runnable {
     }
 
     public MsgManager init(Socket socket, Handler handler) {
+        mStartCount++;
         this.socket = socket;
         this.handler = handler;
-
+        msgManager = this;
 
         return msgManager;
     }
@@ -45,13 +46,16 @@ public class MsgManager implements Runnable {
     private static final String TAG = "ChatHandler";
 
     public void updateHandler(Handler handle, WifiP2pManager  manager, WifiP2pManager.Channel channel) {
-        mStartCount++;
+
         this.handler = handle;
         this.manager = manager;
         this.channel = channel;
     }
 
     public static MsgManager getInstance() {
+        if(msgManager == null) {
+            return new MsgManager();
+        }
         return msgManager;
     }
 
@@ -63,6 +67,7 @@ public class MsgManager implements Runnable {
             oStream = socket.getOutputStream();
             byte[] buffer = new byte[1024];
             int bytes;
+
             handler.obtainMessage(CONNECTION_SUCCESS)
                     .sendToTarget();
 
