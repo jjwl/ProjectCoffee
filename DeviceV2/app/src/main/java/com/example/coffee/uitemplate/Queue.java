@@ -3,6 +3,7 @@ package com.example.coffee.uitemplate;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.app.AlertDialog;
@@ -13,13 +14,22 @@ import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.youtube.player.YouTubePlayer;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
 import java.util.LinkedList;
 
 
-public class Queue extends Activity implements Handler.Callback {
+public class Queue extends Activity implements Handler.Callback, YouTubePlayer.PlayerStateChangeListener {
     public static final String TAG = "tableActivity";
 
     private WifiP2pManager manager;
@@ -31,7 +41,10 @@ public class Queue extends Activity implements Handler.Callback {
     private Handler myHandler = new Handler(this);
     private MsgManager msgManager = null;
 
-    public LinkedList<String> contentQueue;
+    private ListView videoList;
+    private QueueAdapter videoAdapter;
+    public LinkedList<Video> contentQueue;
+    private Context context = this;
 
     private int drawableId;
 
@@ -52,23 +65,37 @@ public class Queue extends Activity implements Handler.Callback {
         channel = manager.initialize(this, getMainLooper(), null);
 
         msgManager = MsgManager.getInstance();
+
         createContentQueue();
+        this.videoAdapter = new QueueAdapter(this, contentQueue);
+        this.videoList = (ListView) findViewById(R.id.queueList);
+        this.videoList.setAdapter(videoAdapter);
+        initListeners();
     }
 
     public void createContentQueue() {
-        contentQueue = new LinkedList<String>();
+        contentQueue = new LinkedList<Video>();
         showToast("Queue created.");
-//>>>>>>> 6612411418db11df902bc1f3fca52dea2d33f19a
     }
+    //>>>>>>> 6612411418db11df902bc1f3fca52dea2d33f19a
 
-    public void addToQueue(String url) {
-        //should add the url to the queue
-        contentQueue.add(url);
-    }
+    private void initListeners() {
+        this.videoList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String videoId = ((VideoView) view).getVideo().getVideoId();
+                Video vid = ((VideoView) view).getVideo();
 
-    public void checkQueue() {
-        //should return the head of the queue or null if the queue is empty
-        contentQueue.peek();
+                Intent intent = new Intent(getApplicationContext(), YouTubePlayerDialogActivity.class);
+                intent.putExtra("videoId", videoId);
+                intent.putExtra("videoTitle", vid.getVideoTitle());
+                intent.putExtra("channelTitle", vid.getVideoChannel());
+                intent.putExtra("videoDescription", vid.getVideoDescription());
+                intent.putExtra("thumbnailUrl", vid.getVideoThumbnailUrl());
+                intent.putExtra("timestamp", vid.getTimestamp());
+                startActivity(intent);
+            }
+        });
     }
 
     public int getDrawableId() {
@@ -109,74 +136,94 @@ public class Queue extends Activity implements Handler.Callback {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        //// Handle action bar item clicks here. The action bar will
-        //// automatically handle clicks on the Home/Up button, so long
-        //// as you specify a parent activity in AndroidManifest.xml.
-        //int id = item.getItemId();
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
 
-        ////noinspection SimplifiableIfStatement
-        //if (id == R.id.action_settings) {
-        //    return true;
-        //}
-
-        //return super.onOptionsItemSelected(item);
-
-        switch (item.getItemId()) {
-            case R.id.add:
-                //Intended result to bring up a window that asks for a url and then adds url to the queue
-                //(temporary, still figuring out embedded yt videos and/or youtube API)
-                AlertDialog.Builder alert = new AlertDialog.Builder(this);
-
-                alert.setTitle("Add to Queue...");
-                alert.setMessage("Enter URL to add to queue.");
-
-                // Set an EditText view to get user input
-                final EditText input = new EditText(this);
-                alert.setView(input);
-
-                alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        String newUrl = input.getText().toString();
-                        addToQueue(newUrl);
-                        showToast("Adding to queue.");
-                    }
-                });
-
-                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        // Canceled.
-                        showToast("Adding canceled.");
-                    }
-                });
-
-                alert.show();
-
-                return true;
-            case R.id.view:
-                //Intended result to display the current/top item of the queue using checkQueue()
-                //For now, prints out the top of the queue
-                String result = contentQueue.peek();
-                if (result == null)
-                    showToast("Queue is empty.");
-                else {
-                    System.out.println(contentQueue.peek());
-                    showToast("Going to next in queue.");
-                }
-                return true;
-            case R.id.next:
-                //For now, returns a toast saying "Going to next in queue." Intended result to push
-                //off the current/top item of the queue and go to the next item. Keeping this here
-                //just in case skipping items on queue is desired.
-                showToast("Going to next in queue.");
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
     public void showToast(String message) {
         Toast toast = Toast.makeText(Queue.this, message, Toast.LENGTH_SHORT);
         toast.show();
+    }
+
+    public void receiveVideo(String videoInfo)
+    {
+        HashMap<String, String> metadata = parseJsonResults(videoInfo);
+        Video video = new Video(metadata.get("videoId"),
+                metadata.get("videoTitle"),
+                metadata.get("channelTitle"),
+                metadata.get("videoDescription"),
+                metadata.get("thumbnailUrl"),
+                metadata.get("videoTimestamp"),
+                metadata.get("name"));
+
+        contentQueue.add(video);
+    }
+
+    /**
+     * Parses the JSON object that is returned
+     *
+     * @param results the stringified JSON object
+     * @return hashmap with metadata
+     */
+    private HashMap<String, String> parseJsonResults(String results) {
+        HashMap<String, String> video = new HashMap<String, String>();
+
+        Log.d("jsonresults", results);
+
+        try {
+            JSONObject jObject = new JSONObject(results);
+            video.put("videoId", jObject.getString("videoId"));
+            video.put("videoTitle", jObject.getString("videoTitle"));
+            video.put("videoDescription", jObject.getString("videoDescription"));
+            video.put("channelTitle", jObject.getString("channelTitle"));
+            video.put("videoTimestamp", jObject.getString("videoTimestamp"));
+            video.put("thumbnailUrl", jObject.getString("thumbnailUrl"));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return video;
+    }
+
+    @Override
+    public void onLoaded(String arg0) {
+
+    }
+
+    @Override
+    public void onLoading() {
+
+    }
+
+    @Override
+    public void onVideoEnded() {
+        //Emmett put your stuff here
+        //Note: this will run after every video that ends
+    }
+
+    @Override
+    public void onVideoStarted() {
+
+    }
+
+    @Override
+    public void onAdStarted() {
+        
+    }
+
+    @Override
+    public void onError(com.google.android.youtube.player.YouTubePlayer.ErrorReason arg0) {
+
     }
 
     @Override
