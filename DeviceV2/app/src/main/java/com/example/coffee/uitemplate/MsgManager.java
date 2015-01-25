@@ -52,17 +52,13 @@ public class MsgManager implements Runnable {
     }
 
     public static MsgManager getInstance() {
-        if(msgManager == null) {
-            msgManager = new MsgManager();
-        }
-
         return msgManager;
     }
 
     @Override
     public void run() {
         try {
-
+            msgManager = this;
             iStream = socket.getInputStream();
             oStream = socket.getOutputStream();
             byte[] buffer = new byte[1024];

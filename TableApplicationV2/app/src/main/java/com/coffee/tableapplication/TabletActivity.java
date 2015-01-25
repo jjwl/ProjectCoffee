@@ -104,7 +104,7 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                 rand = new Random();
                 nextCM = rand.nextInt(adapter.getSize() - 1);
 
-                while(true){
+                //while(true){
                     timer.schedule( new TimerTask() {
                         public void run() {
                             nextCM++;
@@ -114,7 +114,7 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                             MsgManager.getInstance().write(("ContentMaster" + adapter.getItemAddress(nextCM)).getBytes());
                         }
                     }, 0, 60*1000*roundTime);
-                }
+            //    }
 
 
             }

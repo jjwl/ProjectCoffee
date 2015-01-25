@@ -17,9 +17,6 @@ public class MsgManager implements Runnable {
     private Socket socket = null;
     private Handler handler;
 
-    private MsgManager() {
-    }
-
     public MsgManager(Socket socket, Handler handler) {
         this.socket = socket;
         this.handler = handler;
@@ -30,10 +27,6 @@ public class MsgManager implements Runnable {
     private static final String TAG = "MsgHandler";
 
     public static MsgManager getInstance() {
-        if(msgManager == null) {
-            msgManager = new MsgManager();
-        }
-
         return msgManager;
     }
 
@@ -41,6 +34,7 @@ public class MsgManager implements Runnable {
     @Override
     public void run() {
         try {
+            msgManager = this;
             iStream = socket.getInputStream();
             oStream = socket.getOutputStream();
             byte[] buffer = new byte[1024];
