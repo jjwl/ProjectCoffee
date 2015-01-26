@@ -3,6 +3,7 @@ package com.example.coffee.uitemplate;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
@@ -15,9 +16,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.Timer;
+import android.widget.ImageButton;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -60,7 +63,7 @@ public class Kudos extends Activity  implements WifiP2pManager.ChannelListener, 
 
         msgManager = MsgManager.getInstance();
 
-        Button kudosBtn = (Button)findViewById(R.id.kudosBtn);
+        ImageButton kudosBtn = (ImageButton)findViewById(R.id.kudosBtn);
         kudosBtn.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -118,6 +121,17 @@ public class Kudos extends Activity  implements WifiP2pManager.ChannelListener, 
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+        if (id == R.id.menu_now_playing) {
+            // bring to kudos page or content master mode ?
+            // need logic to determine who is who
+            startActivity(new Intent(Kudos.this, Kudos.class));
+            return true;
+        }
+        if (id == R.id.menu_queue) {
+            // bring to queue page
+            startActivity(new Intent(Kudos.this, Queue.class));
             return true;
         }
 
