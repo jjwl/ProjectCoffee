@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 
 public class Queue extends Activity {
@@ -13,6 +15,14 @@ public class Queue extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_queue);
+
+        Button addBtn = (Button)findViewById(R.id.addBtn);
+        addBtn.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Queue.this, VideoSearch.class));
+            }
+        });
     }
 
 

@@ -8,38 +8,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
-import java.util.Queue;
-
-
-public class WelcomeScreen extends Activity {
+public class VideoSearch extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_welcome_screen);
-
-        Button kudosBtn = (Button)findViewById(R.id.goKudosBtn);
-        kudosBtn.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-             startActivity(new Intent(WelcomeScreen.this, NowPlayingKudos.class));
-            }
-        });
-
-        Button queueBtn = (Button)findViewById(R.id.goQueueBtn);
-        queueBtn.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-             startActivity(new Intent(WelcomeScreen.this, Queue.class));
-            }
-        });
+        setContentView(R.layout.activity_queue);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_welcome_screen, menu);
+        getMenuInflater().inflate(R.menu.menu_queue, menu);
         return true;
     }
 
@@ -52,6 +33,18 @@ public class WelcomeScreen extends Activity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+
+        if (id == R.id.menu_now_playing) {
+            // bring to kudos page or content master mode ?
+            // need logic to determine who is who
+            startActivity(new Intent(VideoSearch.this, NowPlayingKudos.class));
+            return true;
+        }
+        if (id == R.id.menu_queue) {
+            // bring to queue page
+            startActivity(new Intent(VideoSearch.this, Queue.class));
             return true;
         }
         return super.onOptionsItemSelected(item);

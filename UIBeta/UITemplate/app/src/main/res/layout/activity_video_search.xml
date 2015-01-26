@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/videoSearch"
+    android:background="#4b4b4b"
+    android:weightSum="1">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:id="@+id/searchBar"
+        android:text="Enter Search"
+        android:textColor="#9b9b9b"
+        android:paddingEnd="5dp"
+        android:paddingStart="10dp"
+        android:editable="true"
+        android:clickable="true"
+        android:inputType="text|textFilter|textWebEditText|textAutoComplete|textAutoCorrect" />
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/searchResults"
+        android:layout_gravity="center_horizontal" />
+</LinearLayout>
