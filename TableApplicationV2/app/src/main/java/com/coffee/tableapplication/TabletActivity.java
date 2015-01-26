@@ -22,6 +22,8 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import org.apache.commons.lang.time.StopWatch;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,7 +55,12 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
     private MsgManager msgManager = null;
     private UsersListAdapter adapter;
     private Timer timer = null;
+    private StopWatch stopWatch = null;
+    private StopWatch gameLoopWatch = null;
 
+    private boolean videoPlaying = false;
+    private boolean offSwitch = true;
+    private int kudosLimitTime = 10; //time between sending kudos in seconds
     private int roundTime = 2; //time in between rounds in minutes
     private int nextCM = 0;
     private Random rand = null;
@@ -61,6 +68,7 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tablet);
+        stopWatch.start();
 
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
@@ -99,24 +107,27 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                     }
                 });
 
-
                 timer = new Timer();
                 rand = new Random();
                 nextCM = rand.nextInt(adapter.getSize() - 1);
+                while(offSwitch){
 
-                //while(true){
+                    nextCM++;
+                    if(nextCM + 1 == adapter.getSize()){
+                        nextCM = 0;
+                    }
+                    MsgManager.getInstance().write(("ContentMaster" + adapter.getItemAddress(nextCM)).getBytes());
+                    gameLoopWatch.start();
                     timer.schedule( new TimerTask() {
                         public void run() {
-                            nextCM++;
-                            if(nextCM + 1 == adapter.getSize()){
-                                nextCM = 0;
+                            while(videoPlaying == false){
+                                //Do nothing until the videoPlaying is true
                             }
-                            MsgManager.getInstance().write(("ContentMaster" + adapter.getItemAddress(nextCM)).getBytes());
                         }
-                    }, 0, 60*1000*roundTime);
-            //    }
-
-
+                    }, 60*1000*roundTime);
+                    gameLoopWatch.stop();
+                    gameLoopWatch.reset();
+                }
             }
         });
 
@@ -304,7 +315,10 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                 // construct a string from the valid bytes in the buffer
                 String readMessage = new String(readBuf, 0, msg.arg1);
                 Log.d(TAG, readMessage);
-                if(readMessage.contains("Kudos")) {
+                if(readMessage.contains("Kudos") && stopWatch.getTime() > kudosLimitTime * 1000) {
+                    stopWatch.stop();
+                    stopWatch.reset();
+                    stopWatch.start();
                     Toast.makeText(this, readMessage, Toast.LENGTH_LONG).show();
                     adapter.updateKudos(adapter.getItemAddress(nextCM));
                 }

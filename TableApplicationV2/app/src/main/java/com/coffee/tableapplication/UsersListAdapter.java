@@ -59,8 +59,18 @@ public class UsersListAdapter extends ArrayAdapter<WifiP2pDevice> {
         return items.size();
     }
 
+    //This gets called whenever kudos gets received by the tabletActivity.
+    //String contentMaster: the address of the contentMaster who received the kudos.
     public void updateKudos(String contentMaster){
 
 
+    }
+
+    //This function calculated who won the score.
+    //You might want to re-sort the list in order of ranking.
+    //returns the address of the winner.
+    public String finalizeScore(){
+
+        return "";
     }
 }
