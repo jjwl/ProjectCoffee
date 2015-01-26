@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -37,6 +38,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class QueueSearch extends Activity {
+
+    public static final String TAG = "queueSearch";
 
     private EditText searchEditText;
     private ImageButton searchButton;
@@ -114,7 +117,6 @@ public class QueueSearch extends Activity {
                 intent.putExtra("channelTitle", vid.getVideoChannel());
                 intent.putExtra("videoDescription", vid.getVideoDescription());
                 intent.putExtra("thumbnailUrl", vid.getVideoThumbnailUrl());
-                intent.putExtra("isGameHost", "false");
                 startActivity(intent);
             }
         });
@@ -149,9 +151,9 @@ public class QueueSearch extends Activity {
                         }
 
                         String jsonifiedVideo = jsonVideo.toString();
-                        /**
-                         * Want to send String jsonifiedVideo to Queue from here
-                         */
+                        Intent intent = new Intent(QueueSearch.this, Queue.class);
+                        intent.putExtra("message", jsonifiedVideo);
+                        startActivity(intent);
                     }
                 });
 
@@ -316,7 +318,22 @@ public class QueueSearch extends Activity {
         return metadata;
     }
 
-    /**
-     * Insert whatever allows for sending messages here.
-     */
+    @Override
+    public boolean handleMessage(Message msg) {
+        switch (msg.what) {
+            case MsgManager.MESSAGE_READ:
+                byte[] readBuf = (byte[]) msg.obj;
+                // construct a string from the valid bytes in the buffer
+                String readMessage = new String(readBuf, 0, msg.arg1);
+                Log.d(TAG, readMessage);
+                break;
+
+            case MsgManager.CONNECTION_SUCCESS:
+                //Only when the entire thing has completed connection, go to welcome screen.
+
+                break;
+        }
+        return true;
+    }
+
 }

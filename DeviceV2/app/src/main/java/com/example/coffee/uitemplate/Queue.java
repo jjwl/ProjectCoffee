@@ -37,7 +37,6 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
     private final IntentFilter intentFilter = new IntentFilter();
     private WifiP2pManager.Channel channel;
     private BroadcastReceiver receiver = null;
-
     private Handler myHandler = new Handler(this);
     private MsgManager msgManager = null;
 
@@ -70,6 +69,12 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
         this.videoAdapter = new QueueAdapter(this, contentQueue);
         this.videoList = (ListView) findViewById(R.id.queueList);
         this.videoList.setAdapter(videoAdapter);
+
+        Bundle bundle = getIntent().getExtras();
+        String jsonifiedVideo = bundle.getString("message");
+
+        receiveVideo(jsonifiedVideo);
+
         initListeners();
     }
 

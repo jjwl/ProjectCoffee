@@ -3,6 +3,8 @@ package com.example.coffee.uitemplate;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,6 +22,7 @@ import com.google.android.youtube.player.YouTubePlayer.Provider;
 import com.google.android.youtube.player.YouTubePlayerFragment;
 
 public class YouTubePlayerDialogActivity extends YouTubeFailureRecoveryActivity {
+    public static final String TAG = "YouTubePlayerDialogActivity";
 
     private String videoId;
     private String videoTitle;
@@ -33,6 +36,11 @@ public class YouTubePlayerDialogActivity extends YouTubeFailureRecoveryActivity 
 
     private Context context;
     private YouTubePlayer player;
+
+    private MsgManager msgManager = null;
+
+    private String jsonifiedVideo;
+    public Intent intent;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -98,9 +106,13 @@ public class YouTubePlayerDialogActivity extends YouTubeFailureRecoveryActivity 
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                                /**
-                                 * We want to send jsonVideo.toString() in a message here!!!
-                                 */
+
+                                jsonifiedVideo = jsonVideo.toString();
+
+                                intent = new Intent(YouTubePlayerDialogActivity.this, Queue.class);
+                                intent.putExtra("message", jsonifiedVideo);
+                                startActivity(intent);
+
                                 break;
                             case R.id.control_item_submit_video_from_time:
                                 int currentTimeInMillis = player.getCurrentTimeMillis();
@@ -111,9 +123,13 @@ public class YouTubePlayerDialogActivity extends YouTubeFailureRecoveryActivity 
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                                /**
-                                 * We want to send jsonVideo.toString() in a message here!!!
-                                 */
+
+                                jsonifiedVideo = jsonVideo.toString();
+
+                                intent = new Intent(YouTubePlayerDialogActivity.this, Queue.class);
+                                intent.putExtra("message", jsonifiedVideo);
+                                startActivity(intent);
+
                                 break;
                             default:
                                 break;
@@ -134,11 +150,26 @@ public class YouTubePlayerDialogActivity extends YouTubeFailureRecoveryActivity 
         });
     }
 
-    /**
-     * Sending a message logic here!!!
-     */
-
     @Override
+    public boolean handleMessage(Message msg) {
+        switch (msg.what) {
+            case MsgManager.MESSAGE_READ:
+                byte[] readBuf = (byte[]) msg.obj;
+                // construct a string from the valid bytes in the buffer
+                String readMessage = new String(readBuf, 0, msg.arg1);
+                msgManager.handleMsg(this, readMessage);
+                Log.d(TAG, readMessage);
+                break;
+
+            case MsgManager.CONNECTION_SUCCESS:
+                //Only when the entire thing has completed connection, go to welcome screen.
+
+                break;
+        }
+        return true;
+    }
+
+        @Override
     public void onInitializationSuccess(Provider provider, YouTubePlayer player, boolean wasRestored) {
         if (!wasRestored) {
             this.player = player;
