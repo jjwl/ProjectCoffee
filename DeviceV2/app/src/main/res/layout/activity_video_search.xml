@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.coffee.uitemplate.QueueSearch"
+    tools:context="com.example.coffee.uitemplate.VideoSearch"
     android:id="@+id/videoSearch"
     android:background="#4b4b4b"
     android:weightSum="1">

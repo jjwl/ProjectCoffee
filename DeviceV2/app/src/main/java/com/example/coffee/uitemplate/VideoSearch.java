@@ -37,7 +37,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class QueueSearch extends Activity {
+public class VideoSearch extends Activity {
 
     public static final String TAG = "queueSearch";
 
@@ -111,7 +111,7 @@ public class QueueSearch extends Activity {
                 String videoId = ((VideoView) view).getVideo().getVideoId();
                 Video vid = ((VideoView) view).getVideo();
 
-                Intent intent = new Intent(getApplicationContext(), YouTubePlayerDialogActivity.class);
+                Intent intent = new Intent(getApplicationContext(), VideoDetail.class);
                 intent.putExtra("videoId", videoId);
                 intent.putExtra("videoTitle", vid.getVideoTitle());
                 intent.putExtra("channelTitle", vid.getVideoChannel());
@@ -151,7 +151,7 @@ public class QueueSearch extends Activity {
                         }
 
                         String jsonifiedVideo = jsonVideo.toString();
-                        Intent intent = new Intent(QueueSearch.this, Queue.class);
+                        Intent intent = new Intent(VideoSearch.this, Queue.class);
                         intent.putExtra("message", jsonifiedVideo);
                         startActivity(intent);
                     }

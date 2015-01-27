@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.coffee.uitemplate.YouTubePlayerDialogActivity"
+    tools:context="com.example.coffee.uitemplate.VideoDetail"
     android:background="#4b4b4b"
     android:weightSum="1"
     android:id="@+id/videoDetail">
