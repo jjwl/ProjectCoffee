@@ -214,11 +214,12 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
     public void onVideoEnded() {
         //Emmett put your stuff here
         //Note: this will run after every video that ends
+        MsgManager.getInstance().write("VideoFinished".getBytes());
     }
 
     @Override
     public void onVideoStarted() {
-
+        MsgManager.getInstance().write("VideoStarted".getBytes());
     }
 
     @Override
