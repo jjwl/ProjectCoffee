@@ -59,7 +59,7 @@ public class VideoSearch extends Activity {
         this.videoQueue = new ArrayList<Video>();
         this.videoAdapter = new QueueAdapter(this, videoQueue);
 
-        this.searchButton = (ImageButton) findViewById(R.id.search_button);
+        //this.searchButton = (ImageButton) findViewById(R.id.search_button);
         this.searchEditText = (EditText) findViewById(R.id.searchBar);
         this.searchResultsList = (ListView) findViewById(R.id.searchResults);
         this.searchResultsList.setAdapter(videoAdapter);
@@ -126,7 +126,7 @@ public class VideoSearch extends Activity {
             public boolean onItemLongClick(AdapterView<?> parent, final View view, int position, long id) {
                 final Dialog dialog = new Dialog(context);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dialog.setContentView(R.layout.dialog_choose_video);
+                dialog.setContentView(R.layout.activity_video_search_dialog);
                 ImageButton dialogOkay = (ImageButton) dialog.findViewById(R.id.dialog_button_submit_okay);
                 ImageButton dialogCancel = (ImageButton) dialog.findViewById(R.id.dialog_button_submit_cancel);
 
@@ -160,7 +160,7 @@ public class VideoSearch extends Activity {
                 dialogCancel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.d("queue search", "Cancel clicked");
+                        Log.d("videosearch", "Cancel clicked");
                         dialog.dismiss();
                     }
                 });
@@ -316,24 +316,6 @@ public class VideoSearch extends Activity {
         }
 
         return metadata;
-    }
-
-    @Override
-    public boolean handleMessage(Message msg) {
-        switch (msg.what) {
-            case MsgManager.MESSAGE_READ:
-                byte[] readBuf = (byte[]) msg.obj;
-                // construct a string from the valid bytes in the buffer
-                String readMessage = new String(readBuf, 0, msg.arg1);
-                Log.d(TAG, readMessage);
-                break;
-
-            case MsgManager.CONNECTION_SUCCESS:
-                //Only when the entire thing has completed connection, go to welcome screen.
-
-                break;
-        }
-        return true;
     }
 
 }

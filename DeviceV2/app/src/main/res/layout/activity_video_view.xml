@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="85dp"
+    android:paddingTop="3dp"
+    android:paddingBottom="3dp"
+    android:orientation="horizontal"
+    android:descendantFocusability="blocksDescendants" >
+
+    <ImageView android:id="@+id/video_thumbnail"
+        android:layout_width="120dp"
+        android:layout_height="66dp"
+        android:layout_gravity="center"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_launcher" />
+
+    <LinearLayout android:layout_weight="1"
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:paddingLeft="3dp"
+        android:orientation="vertical" >
+
+        <TextView android:id="@+id/video_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="1dp"
+            android:text="Title"
+            android:textStyle="bold"
+            android:maxLines="2"
+            android:ellipsize="end" />
+
+        <TextView android:id="@+id/video_channel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="1dp"
+            android:text="Channel"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <TextView android:id="@+id/video_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="0"
+            android:ellipsize="end"
+            android:text="Description" />
+    </LinearLayout>
+
+    <ImageButton android:id="@+id/button_video_submission_options"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:rotation="90" />
+     <!--android:src="@drawable/menu_icon_vertical_orange_12"
+        android:background="@null" />-->
+
+</LinearLayout>

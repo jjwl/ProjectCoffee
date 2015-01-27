@@ -25,13 +25,13 @@ public class VideoView extends LinearLayout {
         super(context);
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.video_search_result, this, true);
+        inflater.inflate(R.layout.activity_video_view, this, true);
 
         this.context = context;
 
         this.video = video;
         this.thumbnail = (ImageView) findViewById(R.id.video_thumbnail);
-        this.title = (ImageView) findViewById(R.id.video_title);
+        this.title = (TextView) findViewById(R.id.video_title);
         this.channel = (TextView) findViewById(R.id.video_channel);
         this.description = (TextView) findViewById(R.id.video_description);
         this.videoOptionsButton = (ImageButton) findViewById(R.id.button_video_submission_options);
