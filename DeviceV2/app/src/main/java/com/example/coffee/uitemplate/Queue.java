@@ -19,6 +19,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubeStandalonePlayer;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,7 +42,6 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
     private ListView videoList;
     private QueueAdapter videoAdapter;
     public LinkedList<Video> contentQueue;
-    private Context context = this;
 
     private int drawableId;
 
@@ -96,21 +96,24 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
                 String videoId = ((VideoView) view).getVideo().getVideoId();
                 Video vid = ((VideoView) view).getVideo();
 
-                Intent intent = new Intent(getApplicationContext(), VideoDetail.class);
+                /*Intent intent = new Intent(getApplicationContext(), VideoDetail.class);
                 intent.putExtra("videoId", videoId);
                 intent.putExtra("videoTitle", vid.getVideoTitle());
                 intent.putExtra("channelTitle", vid.getVideoChannel());
                 intent.putExtra("videoDescription", vid.getVideoDescription());
                 intent.putExtra("thumbnailUrl", vid.getVideoThumbnailUrl());
                 intent.putExtra("timestamp", vid.getTimestamp());
+                startActivity(intent);*/
+
+                Intent intent = YouTubeStandalonePlayer.createVideoIntent(Queue.this, DeveloperKey.DEVELOPER_KEY, vid.getVideoId());
                 startActivity(intent);
             }
         });
     }
 
-    public int getDrawableId() {
+    /*public int getDrawableId() {
         return drawableId;
-    }
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -176,12 +179,6 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
                 metadata.get("name"));
 
         contentQueue.add(video);
-
-        if (contentQueue.size() == 1) {
-            Intent intent = new Intent(Queue.this, VideoDetail.class);
-            intent.putExtra("queuestart", true);
-            startActivity(intent);
-        }
     }
 
     /**
@@ -226,6 +223,13 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
         //Emmett put your stuff here
         //Note: this will run after every video that ends
         MsgManager.getInstance().write("VideoFinished".getBytes());
+
+        //Play next video on the queue if it is available
+        contentQueue.remove();
+        if (contentQueue.peek() != null) {
+            Intent intent = YouTubeStandalonePlayer.createVideoIntent(Queue.this, DeveloperKey.DEVELOPER_KEY, contentQueue.peek().getVideoId());
+            startActivity(intent);
+        }
     }
 
     @Override

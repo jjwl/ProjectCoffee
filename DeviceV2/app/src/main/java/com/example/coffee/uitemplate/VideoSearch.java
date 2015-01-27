@@ -54,14 +54,14 @@ public class VideoSearch extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.youtube_search_screen);
+        setContentView(R.layout.activity_video_search);
 
         this.videoQueue = new ArrayList<Video>();
         this.videoAdapter = new QueueAdapter(this, videoQueue);
 
         this.searchButton = (ImageButton) findViewById(R.id.search_button);
-        this.searchEditText = (EditText) findViewById(R.id.youtube_search_field);
-        this.searchResultsList = (ListView) findViewById(R.id.query_results_list);
+        this.searchEditText = (EditText) findViewById(R.id.searchBar);
+        this.searchResultsList = (ListView) findViewById(R.id.searchResults);
         this.searchResultsList.setAdapter(videoAdapter);
 
         initListeners();
