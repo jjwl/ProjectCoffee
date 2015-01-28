@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pManager;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -16,11 +14,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubeStandalonePlayer;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,14 +36,12 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
     private final IntentFilter intentFilter = new IntentFilter();
     private WifiP2pManager.Channel channel;
     private BroadcastReceiver receiver = null;
-
     private Handler myHandler = new Handler(this);
     private MsgManager msgManager = null;
 
     private ListView videoList;
     private QueueAdapter videoAdapter;
     public LinkedList<Video> contentQueue;
-    private Context context = this;
 
     private int drawableId;
 
@@ -70,14 +67,27 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
         this.videoAdapter = new QueueAdapter(this, contentQueue);
         this.videoList = (ListView) findViewById(R.id.queueList);
         this.videoList.setAdapter(videoAdapter);
+
+        Bundle bundle = getIntent().getExtras();
+        String jsonifiedVideo = bundle.getString("message");
+
+        receiveVideo(jsonifiedVideo);
+
         initListeners();
+
+        Button addBtn = (Button)findViewById(R.id.addBtn);
+        addBtn.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Queue.this, VideoSearch.class));
+            }
+        });
     }
 
     public void createContentQueue() {
         contentQueue = new LinkedList<Video>();
         showToast("Queue created.");
     }
-    //>>>>>>> 6612411418db11df902bc1f3fca52dea2d33f19a
 
     private void initListeners() {
         this.videoList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -86,21 +96,24 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
                 String videoId = ((VideoView) view).getVideo().getVideoId();
                 Video vid = ((VideoView) view).getVideo();
 
-                Intent intent = new Intent(getApplicationContext(), YouTubePlayerDialogActivity.class);
+                /*Intent intent = new Intent(getApplicationContext(), VideoDetail.class);
                 intent.putExtra("videoId", videoId);
                 intent.putExtra("videoTitle", vid.getVideoTitle());
                 intent.putExtra("channelTitle", vid.getVideoChannel());
                 intent.putExtra("videoDescription", vid.getVideoDescription());
                 intent.putExtra("thumbnailUrl", vid.getVideoThumbnailUrl());
                 intent.putExtra("timestamp", vid.getTimestamp());
+                startActivity(intent);*/
+
+                Intent intent = YouTubeStandalonePlayer.createVideoIntent(Queue.this, DeveloperKey.DEVELOPER_KEY, vid.getVideoId());
                 startActivity(intent);
             }
         });
     }
 
-    public int getDrawableId() {
+    /*public int getDrawableId() {
         return drawableId;
-    }
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -113,7 +126,7 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
     @Override
     protected void onStart() {
         MsgManager.getInstance().updateHandler(myHandler, manager, channel);
-        super.onStop();
+        super.onStart();
     }
     @Override
     protected void onDestroy() {
@@ -209,11 +222,19 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
     public void onVideoEnded() {
         //Emmett put your stuff here
         //Note: this will run after every video that ends
+        MsgManager.getInstance().write("VideoFinished".getBytes());
+
+        //Play next video on the queue if it is available
+        contentQueue.remove();
+        if (contentQueue.peek() != null) {
+            Intent intent = YouTubeStandalonePlayer.createVideoIntent(Queue.this, DeveloperKey.DEVELOPER_KEY, contentQueue.peek().getVideoId());
+            startActivity(intent);
+        }
     }
 
     @Override
     public void onVideoStarted() {
-
+        MsgManager.getInstance().write("VideoStarted".getBytes());
     }
 
     @Override

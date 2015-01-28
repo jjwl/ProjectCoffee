@@ -1,14 +1,14 @@
 package com.example.coffee.uitemplate;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup.LayoutParams;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 
@@ -19,7 +19,8 @@ import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayer.Provider;
 import com.google.android.youtube.player.YouTubePlayerFragment;
 
-public class YouTubePlayerDialogActivity extends YouTubeFailureRecoveryActivity {
+public class VideoDetail extends YouTubeFailureRecoveryActivity {
+    public static final String TAG = "VideoDetail";
 
     private String videoId;
     private String videoTitle;
@@ -33,6 +34,11 @@ public class YouTubePlayerDialogActivity extends YouTubeFailureRecoveryActivity 
 
     private Context context;
     private YouTubePlayer player;
+
+    private MsgManager msgManager = null;
+
+    private String jsonifiedVideo;
+    public Intent intent;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,25 +57,78 @@ public class YouTubePlayerDialogActivity extends YouTubeFailureRecoveryActivity 
 
         this.context = this;
 
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_dialog_youtube_player);
+        setContentView(R.layout.activity_video_detail);
 
-        WindowManager.LayoutParams windowManager = getWindow().getAttributes();
-        windowManager.dimAmount = (float) 0.0;
-        windowManager.width = LayoutParams.MATCH_PARENT;
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-        getWindow().setAttributes(windowManager);
+        Bundle bundle = getIntent().getExtras();
+        Boolean queueStart = bundle.getBoolean("queuestart");
 
-        this.addButton = (ImageButton) findViewById(R.id.button_airplane);
-        this.backButton = (ImageButton) findViewById(R.id.button_back);
-        initListeners();
+        // handles back button
+        ImageButton backBtn = (ImageButton)findViewById(R.id.backBtn);
+        backBtn.setOnClickListener(new ImageButton.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(VideoDetail.this, VideoSearch.class));
+            }
+        });
+
+        // handles send/add button
+        ImageButton sendBtn = (ImageButton)findViewById(R.id.sendBtn);
+        sendBtn.setOnClickListener(new ImageButton.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //startActivity(new Intent(VideoView.this, Queue.class));
+                createDialog();
+            }
+        });
+
+        //initListeners();
 
         YouTubePlayerFragment youTubePlayerFragment =
                 (YouTubePlayerFragment) getFragmentManager().findFragmentById(R.id.youtube_fragment);
         youTubePlayerFragment.initialize(DeveloperKey.DEVELOPER_KEY, this);
     }
 
-    private void initListeners() {
+    private void createDialog() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setMessage("Add to Queue?");
+        alert.setCancelable(false);
+        final JSONObject jsonVideo = new JSONObject();
+        try {
+            jsonVideo.put("action", "VIDEO");
+            jsonVideo.put("videoId", videoId);
+            jsonVideo.put("videoTitle", videoTitle);
+            jsonVideo.put("channelTitle", videoChannelTitle);
+            jsonVideo.put("videoDescription", videoDescription);
+            jsonVideo.put("thumbnailUrl", videoThumbnailUrl);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // add to queue
+                try {
+                    jsonVideo.put("videoTimestamp", "0");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                jsonifiedVideo = jsonVideo.toString();
+
+                intent = new Intent(VideoDetail.this, Queue.class);
+                intent.putExtra("message", jsonifiedVideo);
+                startActivity(intent);
+            }
+        });
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // auto-generated method stub
+            }
+        });
+    }
+
+    /*private void initListeners() {
         this.addButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,9 +157,13 @@ public class YouTubePlayerDialogActivity extends YouTubeFailureRecoveryActivity 
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                                /**
-                                 * We want to send jsonVideo.toString() in a message here!!!
-                                 */
+
+                                jsonifiedVideo = jsonVideo.toString();
+
+                                intent = new Intent(VideoDetail.this, Queue.class);
+                                intent.putExtra("message", jsonifiedVideo);
+                                startActivity(intent);
+
                                 break;
                             case R.id.control_item_submit_video_from_time:
                                 int currentTimeInMillis = player.getCurrentTimeMillis();
@@ -111,9 +174,13 @@ public class YouTubePlayerDialogActivity extends YouTubeFailureRecoveryActivity 
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                                /**
-                                 * We want to send jsonVideo.toString() in a message here!!!
-                                 */
+
+                                jsonifiedVideo = jsonVideo.toString();
+
+                                intent = new Intent(VideoDetail.this, Queue.class);
+                                intent.putExtra("message", jsonifiedVideo);
+                                startActivity(intent);
+
                                 break;
                             default:
                                 break;
@@ -132,13 +199,42 @@ public class YouTubePlayerDialogActivity extends YouTubeFailureRecoveryActivity 
                 finish();
             }
         });
-    }
-
-    /**
-     * Sending a message logic here!!!
-     */
+    }*/
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_queue, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        if (id == R.id.menu_now_playing) {
+            // bring to kudos page or content master mode ?
+            // need logic to determine who is who
+            startActivity(new Intent(VideoDetail.this, Kudos.class));
+            return true;
+        }
+        if (id == R.id.menu_queue) {
+            // bring to queue page
+            startActivity(new Intent(VideoDetail.this, Queue.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+        @Override
     public void onInitializationSuccess(Provider provider, YouTubePlayer player, boolean wasRestored) {
         if (!wasRestored) {
             this.player = player;

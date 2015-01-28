@@ -1,6 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.coffee.uitemplate.Queue">
+    tools:context="com.example.coffee.uitemplate.VideoSearch">
 
     <item
         android:id="@+id/menu_now_playing"

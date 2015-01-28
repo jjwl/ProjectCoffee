@@ -24,10 +24,10 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Go To Kudos"
+        android:text="Now Playing"
         android:id="@+id/goKudosBtn"
-        android:paddingStart="13dp"
-        android:paddingEnd="13dp"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="37dp"

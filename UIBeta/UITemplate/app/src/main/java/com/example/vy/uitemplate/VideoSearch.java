@@ -5,25 +5,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 
-
-public class Queue extends Activity {
+public class VideoSearch extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_queue);
-
-        Button addBtn = (Button)findViewById(R.id.addBtn);
-        addBtn.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(Queue.this, VideoSearch.class));
-            }
-        });
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -47,12 +37,12 @@ public class Queue extends Activity {
         if (id == R.id.menu_now_playing) {
             // bring to kudos page or content master mode ?
             // need logic to determine who is who
-            startActivity(new Intent(Queue.this, NowPlayingKudos.class));
+            startActivity(new Intent(VideoSearch.this, NowPlayingKudos.class));
             return true;
         }
         if (id == R.id.menu_queue) {
             // bring to queue page
-            startActivity(new Intent(Queue.this, Queue.class));
+            startActivity(new Intent(VideoSearch.this, Queue.class));
             return true;
         }
         return super.onOptionsItemSelected(item);

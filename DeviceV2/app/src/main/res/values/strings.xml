@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">UITemplate</string>
+    <string name="app_name">Project Coffee</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_welcome_screen">WelcomeScreen</string>
+    <string name="menu_now_playing">Now Playing</string>
+    <string name="menu_queue">My Queue</string>
+    <string name="title_activity_welcome_screen">Welcome Screen</string>
     <string name="title_activity_kudos">Kudos</string>
+    <string name="title_activity_cm">Content Master</string>
     <string name="title_activity_queue">Queue</string>
+
+    <string name="error_player">There was an error initializing the YouTubePlayer (%1$s)</string>
 
 </resources>

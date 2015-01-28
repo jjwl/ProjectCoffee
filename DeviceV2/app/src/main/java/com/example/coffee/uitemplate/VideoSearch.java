@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -36,7 +37,9 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class QueueSearch extends Activity {
+public class VideoSearch extends Activity {
+
+    public static final String TAG = "queueSearch";
 
     private EditText searchEditText;
     private ImageButton searchButton;
@@ -51,14 +54,14 @@ public class QueueSearch extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.youtube_search_screen);
+        setContentView(R.layout.activity_video_search);
 
         this.videoQueue = new ArrayList<Video>();
         this.videoAdapter = new QueueAdapter(this, videoQueue);
 
-        this.searchButton = (ImageButton) findViewById(R.id.search_button);
-        this.searchEditText = (EditText) findViewById(R.id.youtube_search_field);
-        this.searchResultsList = (ListView) findViewById(R.id.query_results_list);
+        //this.searchButton = (ImageButton) findViewById(R.id.search_button);
+        this.searchEditText = (EditText) findViewById(R.id.searchBar);
+        this.searchResultsList = (ListView) findViewById(R.id.searchResults);
         this.searchResultsList.setAdapter(videoAdapter);
 
         initListeners();
@@ -108,13 +111,12 @@ public class QueueSearch extends Activity {
                 String videoId = ((VideoView) view).getVideo().getVideoId();
                 Video vid = ((VideoView) view).getVideo();
 
-                Intent intent = new Intent(getApplicationContext(), YouTubePlayerDialogActivity.class);
+                Intent intent = new Intent(getApplicationContext(), VideoDetail.class);
                 intent.putExtra("videoId", videoId);
                 intent.putExtra("videoTitle", vid.getVideoTitle());
                 intent.putExtra("channelTitle", vid.getVideoChannel());
                 intent.putExtra("videoDescription", vid.getVideoDescription());
                 intent.putExtra("thumbnailUrl", vid.getVideoThumbnailUrl());
-                intent.putExtra("isGameHost", "false");
                 startActivity(intent);
             }
         });
@@ -124,7 +126,7 @@ public class QueueSearch extends Activity {
             public boolean onItemLongClick(AdapterView<?> parent, final View view, int position, long id) {
                 final Dialog dialog = new Dialog(context);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dialog.setContentView(R.layout.dialog_choose_video);
+                dialog.setContentView(R.layout.activity_video_search_dialog);
                 ImageButton dialogOkay = (ImageButton) dialog.findViewById(R.id.dialog_button_submit_okay);
                 ImageButton dialogCancel = (ImageButton) dialog.findViewById(R.id.dialog_button_submit_cancel);
 
@@ -149,16 +151,16 @@ public class QueueSearch extends Activity {
                         }
 
                         String jsonifiedVideo = jsonVideo.toString();
-                        /**
-                         * Want to send String jsonifiedVideo to Queue from here
-                         */
+                        Intent intent = new Intent(VideoSearch.this, Queue.class);
+                        intent.putExtra("message", jsonifiedVideo);
+                        startActivity(intent);
                     }
                 });
 
                 dialogCancel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.d("queue search", "Cancel clicked");
+                        Log.d("videosearch", "Cancel clicked");
                         dialog.dismiss();
                     }
                 });
@@ -316,7 +318,4 @@ public class QueueSearch extends Activity {
         return metadata;
     }
 
-    /**
-     * Insert whatever allows for sending messages here.
-     */
 }

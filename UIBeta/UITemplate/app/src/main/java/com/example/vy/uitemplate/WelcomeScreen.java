@@ -22,7 +22,7 @@ public class WelcomeScreen extends Activity {
         kudosBtn.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(WelcomeScreen.this, NowPlayingKudos.class));
+             startActivity(new Intent(WelcomeScreen.this, NowPlayingKudos.class));
             }
         });
 
@@ -30,7 +30,7 @@ public class WelcomeScreen extends Activity {
         queueBtn.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(WelcomeScreen.this, Queue.class));
+             startActivity(new Intent(WelcomeScreen.this, Queue.class));
             }
         });
     }
