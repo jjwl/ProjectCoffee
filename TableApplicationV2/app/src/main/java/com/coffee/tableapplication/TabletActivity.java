@@ -23,7 +23,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import org.apache.commons.lang.time.StopWatch;
-
+//import org.apache.commons.lang3.time.StopWatch;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,6 +34,8 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
+
+//Settings->Wifi->...->Wifi direct->back to app
 
 public class TabletActivity extends Activity implements WifiP2pManager.ConnectionInfoListener, Handler.Callback{
     public static final String TAG = "tableActivity";
@@ -54,12 +56,12 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
     private Handler handler = new Handler(this);
     private MsgManager msgManager = null;
     private UsersListAdapter adapter;
-    private Timer timer = null;
+//    private Timer timer = null;
     private StopWatch stopWatch = null;
     private StopWatch gameLoopWatch = null;
 
-    private boolean videoPlaying = false;
-    private boolean offSwitch = true;
+//    private boolean videoPlaying = false;
+    private boolean startedGame = false;
     private int kudosLimitTime = 10; //time between sending kudos in seconds
     private int roundTime = 2; //time in between rounds in minutes
     private int nextCM = 0;
@@ -68,7 +70,10 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tablet);
+        stopWatch = new StopWatch();
+        gameLoopWatch = new StopWatch();
         stopWatch.start();
+        gameLoopWatch = new StopWatch();
 
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
@@ -90,49 +95,26 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
         playBtn.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
+                registerServerService();
                 //Start Content Master thread.
-                manager.discoverServices(channel, new WifiP2pManager.ActionListener() {
 
-                    @Override
-                    public void onSuccess() {
-                        //appendStatus("Service discovery initiated");
-                        Log.d(TabletActivity.TAG, "Service discovery initiated.");
-                    }
-
-                    @Override
-                    public void onFailure(int arg0) {
-                        //appendStatus("Service discovery failed");
-                        Log.d(TabletActivity.TAG, "Service discovery failed.");
-
-                    }
-                });
-
-                timer = new Timer();
-                rand = new Random();
-                nextCM = rand.nextInt(adapter.getSize() - 1);
-                while(offSwitch){
-
-                    nextCM++;
-                    if(nextCM + 1 == adapter.getSize()){
-                        nextCM = 0;
-                    }
+                if(adapter.getSize() > 0 && !startedGame) {
+                    rand = new Random();
+                    nextCM = rand.nextInt(adapter.getSize());
                     MsgManager.getInstance().write(("ContentMaster" + adapter.getItemAddress(nextCM)).getBytes());
+                    Log.d(TabletActivity.TAG, "content master : " + adapter.getItemAddress(nextCM));
                     gameLoopWatch.start();
-                    timer.schedule( new TimerTask() {
-                        public void run() {
-                            while(videoPlaying == false){
-                                //Do nothing until the videoPlaying is true
-                            }
-                        }
-                    }, 60*1000*roundTime);
-                    gameLoopWatch.stop();
-                    gameLoopWatch.reset();
+                    startedGame = true;
                 }
             }
         });
 
         registerServerService();
     }
+
+    public void quitGame(){
+        startedGame = false;
+     }
 
     @Override
     protected void onStop() {
@@ -315,6 +297,19 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                 // construct a string from the valid bytes in the buffer
                 String readMessage = new String(readBuf, 0, msg.arg1);
                 Log.d(TAG, readMessage);
+
+                if(readMessage.contains("VideoFinished")) {
+                    //Check current time, compare with start time, if > 2 min,
+                    // send cm packet and update start time. Otherwise ignore.
+                    if(gameLoopWatch.getTime() > 1000 * roundTime * 60){
+                        nextCM++;
+                        if(nextCM + 1 >= adapter.getSize()){
+                            nextCM = 0;
+                        }
+                        MsgManager.getInstance().write(("ContentMaster" + adapter.getItemAddress(nextCM)).getBytes());
+                    }
+                }
+
                 if(readMessage.contains("Kudos") && stopWatch.getTime() > kudosLimitTime * 1000) {
                     stopWatch.stop();
                     stopWatch.reset();

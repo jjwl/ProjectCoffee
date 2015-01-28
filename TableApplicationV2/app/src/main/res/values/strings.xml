@@ -6,6 +6,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_tablet">TabletActivity</string>
     <string name="play_button">Play</string>
+    <string name="quit_button">Quit</string>
     <string name="kudos_received">Kudos Recieved</string>
 
 </resources>
