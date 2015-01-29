@@ -42,6 +42,7 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
     private ListView videoList;
     private QueueAdapter videoAdapter;
     public LinkedList<Video> contentQueue;
+    private String jsonifiedVideo;
 
     private int drawableId;
 
@@ -69,9 +70,12 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
         this.videoList.setAdapter(videoAdapter);
 
         Bundle bundle = getIntent().getExtras();
-        String jsonifiedVideo = bundle.getString("message");
-
-        receiveVideo(jsonifiedVideo);
+        if (bundle != null) {
+            jsonifiedVideo = bundle.getString("message");
+        }
+        if (jsonifiedVideo != null) {
+            receiveVideo(jsonifiedVideo);
+        }
 
         initListeners();
 
