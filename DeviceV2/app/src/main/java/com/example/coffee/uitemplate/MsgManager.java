@@ -1,6 +1,7 @@
 package com.example.coffee.uitemplate;
 
 import android.app.Activity;
+import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Build;
 import android.os.Bundle;
 import android.bluetooth.BluetoothClass;
@@ -19,6 +20,7 @@ import java.net.Socket;
  */
 public class MsgManager implements Runnable {
     private static MsgManager msgManager = null;
+    private static WifiP2pDevice device = null;
     public static final int MESSAGE_READ = 0x400 + 1;
     public static final int CONNECTION_SUCCESS = 0x400 + 2;
     private Socket socket = null;
@@ -111,7 +113,8 @@ public class MsgManager implements Runnable {
 
         if(message.substring(0,13).equals("ContentMaster")){
             //Build.DEVICE or Build.MODEL
-            if(message.substring(14).equals(Build.DEVICE)){
+            Log.d("Ms", Build.MODEL + " " + message);
+            if(device != null && message.substring(13).equals(device.deviceAddress)) {
             //CM Loop
                 current.startActivity(new Intent(current, Queue.class));
             }else{
@@ -124,8 +127,6 @@ public class MsgManager implements Runnable {
 
 
     public void stop() {
-        mStartCount--;
-        if (mStartCount == 0) {
             // Bring down connection
             if (manager != null && channel != null) {
                 manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
@@ -141,6 +142,9 @@ public class MsgManager implements Runnable {
 
                 });
             }
-        }
+    }
+
+    public void setDevice(WifiP2pDevice device) {
+        this.device = device;
     }
 }

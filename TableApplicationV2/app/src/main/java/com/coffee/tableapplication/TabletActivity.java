@@ -25,6 +25,8 @@ import android.widget.Toast;
 import org.apache.commons.lang.time.StopWatch;
 //import org.apache.commons.lang3.time.StopWatch;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -53,6 +55,7 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
     private WifiP2pManager.Channel channel;
     private BroadcastReceiver receiver = null;
     private WifiP2pDnsSdServiceRequest serviceRequest;
+    private WifiP2pDnsSdServiceInfo myService;
     private Handler handler = new Handler(this);
     private MsgManager msgManager = null;
     private UsersListAdapter adapter;
@@ -66,6 +69,11 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
     private int roundTime = 2; //time in between rounds in minutes
     private int nextCM = 0;
     private Random rand = null;
+
+    private Activity thisContext = this;
+
+    private Map<String, String> discoveryDevice = new HashMap<String, String>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,7 +103,23 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
         playBtn.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                registerServerService();
+                if(!startedGame) {
+                    if (serviceRequest != null) {
+                        manager.removeLocalService(channel, myService,
+                                new WifiP2pManager.ActionListener() {
+
+                                    @Override
+                                    public void onSuccess() {
+                                    }
+
+                                    @Override
+                                    public void onFailure(int arg0) {
+                                    }
+                                });
+                    }
+                    registerServerService();
+                }
+
                 //Start Content Master thread.
 
                 if(adapter.getSize() > 0 && !startedGame) {
@@ -108,7 +132,6 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                 }
             }
         });
-
         registerServerService();
     }
 
@@ -117,7 +140,7 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
      }
 
     @Override
-    protected void onStop() {
+    protected void onDestroy() {
         if (manager != null && channel != null) {
             manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
 
@@ -132,7 +155,7 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
 
             });
         }
-        super.onStop();
+        super.onDestroy();
     }
 
     @Override
@@ -172,8 +195,22 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
     }
 
     public void updateUserList(WifiP2pGroup devices) {
+        if(devices.getClientList().size() == 0 && startedGame) {
+            stopWatch.stop();
+            gameLoopWatch.stop();
+            stopWatch.reset();
+            gameLoopWatch.reset();
+            startedGame = false;
+        }
         adapter.clear();
-        adapter.addAll(devices.getClientList());
+        ArrayList<WifiP2pDevice> deviceList = new ArrayList<WifiP2pDevice>(devices.getClientList());
+        for(int i = 0; i < devices.getClientList().size(); i++){
+            WifiP2pDevice device = deviceList.get(i);
+            if(discoveryDevice.containsKey(device.deviceAddress)){
+                device.deviceName = discoveryDevice.get(device.deviceAddress);
+            }
+            adapter.add(device);
+        }
         adapter.notifyDataSetChanged();
     }
 
@@ -182,9 +219,9 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
         Map<String, String> record = new HashMap<String, String>();
         //record.put(TXTRECORD_PROP_AVAILABLE, "visible");
 
-        WifiP2pDnsSdServiceInfo service = WifiP2pDnsSdServiceInfo.newInstance(
+        myService = WifiP2pDnsSdServiceInfo.newInstance(
                 TABLE_SERVICE, SERVICE_REG_TYPE, record);
-        manager.addLocalService(channel, service, new WifiP2pManager.ActionListener() {
+        manager.addLocalService(channel, myService, new WifiP2pManager.ActionListener() {
 
             @Override
             public void onSuccess() {
@@ -213,6 +250,7 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
 
                             // update the UI and add the item the discovered
                             // device.
+                            Toast.makeText(thisContext, "Found Devices", Toast.LENGTH_SHORT);
                             Log.d(TabletActivity.TAG, "Found device.");
 
                         }
@@ -230,11 +268,62 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                             WifiP2pDevice device) {
                         Log.d(TAG,
                                 device.deviceName + " detected");
-
+                        discoveryDevice.put(device.deviceAddress,  record.get("name"));
+                        if(record.get("name") != null && !"Enter Name".equals(record.get("name"))){
+                            adapter.setName(device.deviceAddress, record.get("name"));
+                        }
                     }
                 });
 
         serviceRequest = WifiP2pDnsSdServiceRequest.newInstance();
+        manager.addServiceRequest(channel, serviceRequest,
+                new WifiP2pManager.ActionListener() {
+
+                    @Override
+                    public void onSuccess() {
+                        //appendStatus("Added service discovery request");
+                        Log.d(TabletActivity.TAG, "Added service discovery request.");
+                    }
+
+                    @Override
+                    public void onFailure(int arg0) {
+                        //appendStatus("Failed adding service discovery request");
+                        Log.d(TabletActivity.TAG, "Failed to add service discovery request.");
+                    }
+                });
+
+        manager.addServiceRequest(channel, serviceRequest,
+                new WifiP2pManager.ActionListener() {
+
+                    @Override
+                    public void onSuccess() {
+                        //appendStatus("Added service discovery request");
+                        Log.d(TabletActivity.TAG, "Added service discovery request.");
+                    }
+
+                    @Override
+                    public void onFailure(int arg0) {
+                        //appendStatus("Failed adding service discovery request");
+                        Log.d(TabletActivity.TAG, "Failed to add service discovery request.");
+                    }
+                });
+
+        manager.addServiceRequest(channel, serviceRequest,
+                new WifiP2pManager.ActionListener() {
+
+                    @Override
+                    public void onSuccess() {
+                        //appendStatus("Added service discovery request");
+                        Log.d(TabletActivity.TAG, "Added service discovery request.");
+                    }
+
+                    @Override
+                    public void onFailure(int arg0) {
+                        //appendStatus("Failed adding service discovery request");
+                        Log.d(TabletActivity.TAG, "Failed to add service discovery request.");
+                    }
+                });
+
         manager.addServiceRequest(channel, serviceRequest,
                 new WifiP2pManager.ActionListener() {
 
@@ -261,6 +350,19 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
             @Override
             public void onFailure(int arg0) {
                 //appendStatus("Service discovery failed");
+                if (serviceRequest != null) {
+                    manager.removeServiceRequest(channel, serviceRequest,
+                            new WifiP2pManager.ActionListener() {
+
+                                @Override
+                                public void onSuccess() {
+                                }
+
+                                @Override
+                                public void onFailure(int arg0) {
+                                }
+                            });
+                }
                 Log.d(TabletActivity.TAG, "Service discovery failed.");
 
             }
@@ -283,7 +385,7 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                 handler.start();
             } catch (IOException e) {
                 Log.d(TAG,
-                        "Failed to create a server thread - " + e.getMessage());
+                        "Failed to create a new server thread - " + e.getMessage());
                 return;
             }
         }

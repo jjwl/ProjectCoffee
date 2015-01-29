@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 
@@ -45,6 +46,7 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
         private WifiP2pDnsSdServiceRequest serviceRequest;
         private Handler myHandler = new Handler(this);
         private MsgManager msgManager = null;
+        private boolean registered = false;
 
         /**
          * @param isWifiP2pEnabled the isWifiP2pEnabled to set
@@ -74,6 +76,7 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
                 @Override
                 public void onClick(View v) {
                     //Registering device - trying to find place to register
+                    startRegistration();
                     discoverService();
                 }
             });
@@ -125,8 +128,9 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
 
         }
 
-    private void startRegistrationAndDiscovery() {
+    private void startRegistration() {
         Map<String, String> record = new HashMap<String, String>();
+        record.put("name", ((EditText)findViewById(R.id.nameEntry)).getText().toString());
 
         WifiP2pDnsSdServiceInfo service = WifiP2pDnsSdServiceInfo.newInstance(
                 DEVICE_SERVICE, SERVICE_REG_TYPE, record);
@@ -135,10 +139,12 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
             @Override
             public void onSuccess() {
                 //appendStatus("Added Local Service");
+                registered = true;
             }
 
             @Override
             public void onFailure(int error) {
+                registered = false;
                 //appendStatus("Failed to add a service");
             }
         });
@@ -279,6 +285,18 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
                 //Only when the entire thing has completed connection, go to welcome screen.
 
                 startActivity(new Intent(this, WelcomeScreen.class));
+                manager.removeServiceRequest(channel, serviceRequest, new ActionListener() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onFailure(int reason) {
+
+                    }
+                });
+
                 break;
         }
         return true;

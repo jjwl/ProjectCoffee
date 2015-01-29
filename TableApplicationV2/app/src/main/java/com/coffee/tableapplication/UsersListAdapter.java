@@ -73,4 +73,16 @@ public class UsersListAdapter extends ArrayAdapter<WifiP2pDevice> {
 
         return "";
     }
+
+    public void setName(String address, String name){
+        for(int i = 0; i < items.size(); i++){
+            if(items.get(i).deviceAddress == address){
+                WifiP2pDevice device = items.remove(i);
+                device.deviceName = name;
+                items.add(i, device);
+                notifyDataSetChanged();
+                return;
+            }
+        }
+    }
 }
