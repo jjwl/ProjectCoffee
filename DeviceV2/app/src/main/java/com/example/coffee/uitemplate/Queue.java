@@ -77,6 +77,10 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
             receiveVideo(jsonifiedVideo);
         }
 
+        Video video;
+        video = new Video("e-ORhEE9VVg", "Taylor Swift - Blank Space", "TaylorSwiftVEVO", "description", "thumbnailUrl");
+        contentQueue.add(video);
+
         initListeners();
 
         Button addBtn = (Button)findViewById(R.id.addBtn);
