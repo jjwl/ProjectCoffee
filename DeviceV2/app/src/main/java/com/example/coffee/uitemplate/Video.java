@@ -33,7 +33,6 @@ public class Video {
         this.videoThumbnailUrl = thumbnailUrl;
         this.videoTimestamp = timestamp;
         this.setPlayerName(name);
-
     }
 
     public String getTimestamp(){
