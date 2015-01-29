@@ -10,6 +10,7 @@
     <string name="title_activity_kudos">Kudos</string>
     <string name="title_activity_cm">Content Master</string>
     <string name="title_activity_queue">Queue</string>
+    <string name="title_activity_video_search">Video Search</string>
 
     <string name="error_player">There was an error initializing the YouTubePlayer (%1$s)</string>
 
