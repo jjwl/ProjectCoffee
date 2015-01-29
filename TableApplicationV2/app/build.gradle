@@ -21,4 +21,6 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile files('/Users/macuser/P2rojectCoffee/ProjectCoffee/TableApplicationV2/libs/apache-rat-0.6.jar')
+    compile files('libs/apache-rat-0.6.jar')
 }
