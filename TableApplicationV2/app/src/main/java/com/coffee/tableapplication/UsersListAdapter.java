@@ -15,12 +15,12 @@ import java.util.List;
 /**
  * Created by Sheng-Han on 12/6/2014.
  */
-public class UsersListAdapter extends ArrayAdapter<WifiP2pDevice> {
+public class UsersListAdapter extends ArrayAdapter<User> {
 
-    private List<WifiP2pDevice> items;
+    private List<User> items;
 
     public UsersListAdapter(Context context, int resource, int textViewResourceId,
-                               List<WifiP2pDevice> objects) {
+                               List<User> objects) {
         super(context, resource, textViewResourceId, objects);
         items = objects;
     }
@@ -33,7 +33,8 @@ public class UsersListAdapter extends ArrayAdapter<WifiP2pDevice> {
                     Context.LAYOUT_INFLATER_SERVICE);
             v = vi.inflate(android.R.layout.simple_list_item_2, null);
         }
-        WifiP2pDevice device = items.get(position);
+        User person = items.get(position);
+        WifiP2pDevice device = person.device;
         if (device != null) {
             TextView top = (TextView) v.findViewById(android.R.id.text1);
             TextView bottom = (TextView) v.findViewById(android.R.id.text2);
@@ -41,7 +42,7 @@ public class UsersListAdapter extends ArrayAdapter<WifiP2pDevice> {
                 top.setText(device.deviceName);
             }
             if (bottom != null) {
-                bottom.setText(device.deviceAddress);
+                bottom.setText(person.kudos);
             }
         }
 
@@ -49,10 +50,10 @@ public class UsersListAdapter extends ArrayAdapter<WifiP2pDevice> {
 
     }
 
-    public String getItemName(int index) { return items.get(index).deviceName;}
+    public String getItemName(int index) { return items.get(index).device.deviceName;}
 
     public String getItemAddress(int index){
-        return items.get(index).deviceAddress;
+        return items.get(index).device.deviceAddress;
     }
 
     public int getSize(){
@@ -62,7 +63,13 @@ public class UsersListAdapter extends ArrayAdapter<WifiP2pDevice> {
     //This gets called whenever kudos gets received by the tabletActivity.
     //String contentMaster: the address of the contentMaster who received the kudos.
     public void updateKudos(String contentMaster){
-
+        for(int i = 0; i < items.size(); i++){
+            if(items.get(i).device.deviceAddress == contentMaster){
+                items.get(i).kudos++;
+                notifyDataSetChanged();
+                return;
+            }
+        }
 
     }
 
@@ -76,10 +83,8 @@ public class UsersListAdapter extends ArrayAdapter<WifiP2pDevice> {
 
     public void setName(String address, String name){
         for(int i = 0; i < items.size(); i++){
-            if(items.get(i).deviceAddress == address){
-                WifiP2pDevice device = items.remove(i);
-                device.deviceName = name;
-                items.add(i, device);
+            if(items.get(i).device.deviceAddress == address){
+                items.get(i).device.deviceName = name;
                 notifyDataSetChanged();
                 return;
             }

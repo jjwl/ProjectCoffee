@@ -97,7 +97,7 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
 
         msgManager = MsgManager.getInstance();
 
-        adapter = new UsersListAdapter(this, android.R.layout.simple_list_item_2, android.R.id.text1,  new ArrayList<WifiP2pDevice>());
+        adapter = new UsersListAdapter(this, android.R.layout.simple_list_item_2, android.R.id.text1,  new ArrayList<User>());
         ListView userList = (ListView) findViewById(R.id.regList);
         userList.setAdapter(adapter);
         playBtn.setOnClickListener(new Button.OnClickListener() {
@@ -209,7 +209,7 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
             if(discoveryDevice.containsKey(device.deviceAddress)){
                 device.deviceName = discoveryDevice.get(device.deviceAddress);
             }
-            adapter.add(device);
+            adapter.add(new User(device));
         }
         adapter.notifyDataSetChanged();
     }
