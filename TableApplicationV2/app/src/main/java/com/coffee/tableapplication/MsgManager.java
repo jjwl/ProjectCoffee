@@ -34,11 +34,11 @@ public class MsgManager implements Runnable {
     @Override
     public void run() {
         try {
-            msgManager = this;
             iStream = socket.getInputStream();
             oStream = socket.getOutputStream();
             byte[] buffer = new byte[1024];
             int bytes;
+            msgManager = this;
             handler.obtainMessage(TabletActivity.MY_HANDLE, this)
                     .sendToTarget();
 

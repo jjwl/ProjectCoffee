@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.util.Comparator;
 import java.util.List;
 
 //import static android.app.PendingIntent.getActivity;
@@ -42,7 +43,7 @@ public class UsersListAdapter extends ArrayAdapter<User> {
                 top.setText(device.deviceName);
             }
             if (bottom != null) {
-                bottom.setText(person.kudos);
+                bottom.setText(person.kudos + "");
             }
         }
 
@@ -50,22 +51,22 @@ public class UsersListAdapter extends ArrayAdapter<User> {
 
     }
 
-    public String getItemName(int index) { return items.get(index).device.deviceName;}
+    public String getItemName(int index) { return this.getItem(index).device.deviceName;}
 
     public String getItemAddress(int index){
-        return items.get(index).device.deviceAddress;
+        return this.getItem(index).device.deviceAddress;
     }
 
     public int getSize(){
-        return items.size();
+        return this.getCount();
     }
 
     //This gets called whenever kudos gets received by the tabletActivity.
     //String contentMaster: the address of the contentMaster who received the kudos.
     public void updateKudos(String contentMaster){
-        for(int i = 0; i < items.size(); i++){
-            if(items.get(i).device.deviceAddress == contentMaster){
-                items.get(i).kudos++;
+        for(int i = 0; i < this.getCount(); i++){
+            if(this.getItem(i).device.deviceAddress == contentMaster){
+                this.getItem(i).kudos++;
                 notifyDataSetChanged();
                 return;
             }
@@ -73,18 +74,33 @@ public class UsersListAdapter extends ArrayAdapter<User> {
 
     }
 
+
     //This function calculated who won the score.
     //You might want to re-sort the list in order of ranking.
     //returns the address of the winner.
     public String finalizeScore(){
+        String winner = "";
+        int maxScore = -1;
+        for(int i = 0; i < this.getCount(); i++){
+            if(this.getItem(i).kudos > maxScore) {
+                maxScore = this.getItem(i).kudos;
+                winner = this.getItemAddress(i);
+            }
+        }
+        this.sort(new Comparator<User>() {
 
-        return "";
+            @Override
+            public int compare(User lhs, User rhs) {
+                return lhs.compareTo(rhs);
+            }
+        });
+        return winner;
     }
 
     public void setName(String address, String name){
-        for(int i = 0; i < items.size(); i++){
-            if(items.get(i).device.deviceAddress == address){
-                items.get(i).device.deviceName = name;
+        for(int i = 0; i < this.getCount(); i++){
+            if(this.getItem(i).device.deviceAddress.equals(address)){
+                this.getItem(i).device.deviceName = name;
                 notifyDataSetChanged();
                 return;
             }

@@ -15,6 +15,7 @@ import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.ChannelListener;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -47,6 +48,7 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
         private Handler myHandler = new Handler(this);
         private MsgManager msgManager = null;
         private boolean registered = false;
+        private String username = Build.MODEL;
 
         /**
          * @param isWifiP2pEnabled the isWifiP2pEnabled to set
@@ -130,7 +132,8 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
 
     private void startRegistration() {
         Map<String, String> record = new HashMap<String, String>();
-        record.put("name", ((EditText)findViewById(R.id.nameEntry)).getText().toString());
+        username = ((EditText)findViewById(R.id.nameEntry)).getText().toString();
+        record.put("name", username);
 
         WifiP2pDnsSdServiceInfo service = WifiP2pDnsSdServiceInfo.newInstance(
                 DEVICE_SERVICE, SERVICE_REG_TYPE, record);
@@ -283,9 +286,10 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
 
             case MsgManager.CONNECTION_SUCCESS:
                 //Only when the entire thing has completed connection, go to welcome screen.
-
+                MsgManager.getInstance().write(("User: " + username + ", " + MsgManager.getInstance().getDevice()).getBytes());
+                Log.d(TAG, "Connection Success.");
                 startActivity(new Intent(this, WelcomeScreen.class));
-                manager.removeServiceRequest(channel, serviceRequest, new ActionListener() {
+                /*manager.removeServiceRequest(channel, serviceRequest, new ActionListener() {
                     @Override
                     public void onSuccess() {
 
@@ -295,7 +299,7 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
                     public void onFailure(int reason) {
 
                     }
-                });
+                });*/
 
                 break;
         }

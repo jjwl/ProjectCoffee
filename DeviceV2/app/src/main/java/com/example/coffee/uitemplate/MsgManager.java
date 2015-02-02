@@ -35,7 +35,6 @@ public class MsgManager implements Runnable {
     }
 
     public MsgManager init(Socket socket, Handler handler) {
-        mStartCount++;
         this.socket = socket;
         this.handler = handler;
         msgManager = this;
@@ -146,5 +145,11 @@ public class MsgManager implements Runnable {
 
     public void setDevice(WifiP2pDevice device) {
         this.device = device;
+    }
+    public String getDevice() {
+        if(device != null) {
+            return device.deviceAddress;
+        }
+        return "";
     }
 }
