@@ -49,6 +49,7 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
     public static final int SERVER_PORT = 4545;
     public static final int MESSAGE_READ = 0x400 + 1;
     public static final int MY_HANDLE = 0x400 + 2;
+    public static final int MANAGER_CLOSE = 0x400 + 3;
 
     private WifiP2pManager manager;
     private final IntentFilter intentFilter = new IntentFilter();
@@ -57,7 +58,7 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
     private WifiP2pDnsSdServiceRequest serviceRequest;
     private WifiP2pDnsSdServiceInfo myService;
     private Handler handler = new Handler(this);
-    private MsgManager msgManager = null;
+    private CoffeeServerSocketHandler msgManager = null;
     private UsersListAdapter adapter;
 //    private Timer timer = null;
     private StopWatch stopWatch = null;
@@ -72,7 +73,7 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
 
     private Activity thisContext = this;
 
-    //private Map<String, String> discoveryDevice = new HashMap<String, String>();
+    private Map<String, User> discoveryDevice = new HashMap<String, User>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,8 +95,6 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
         channel = manager.initialize(this, getMainLooper(), null);
 
         Button playBtn = (Button)findViewById(R.id.playBtn);
-
-        msgManager = MsgManager.getInstance();
 
         adapter = new UsersListAdapter(this, android.R.layout.simple_list_item_2, android.R.id.text1,  new ArrayList<User>());
         ListView userList = (ListView) findViewById(R.id.regList);
@@ -126,7 +125,7 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                     rand = new Random();
                     nextCM = rand.nextInt(adapter.getSize());
                     Log.d(TabletActivity.TAG, "content master : " + adapter.getItemAddress(nextCM));
-                    MsgManager.getInstance().write(("ContentMaster" + adapter.getItemAddress(nextCM)).getBytes());
+                    msgManager.write(("ContentMaster" + adapter.getItemAddress(nextCM)).getBytes());
                     gameLoopWatch.start();
                     startedGame = true;
                 }
@@ -194,8 +193,8 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
         return super.onOptionsItemSelected(item);
     }
 
-    public void updateUserList(WifiP2pGroup devices) {
-        if(devices.getClientList().size() == 0 && startedGame) {
+    public void updateUserList() {
+        if(discoveryDevice.size() == 0 && startedGame) {
             stopWatch.stop();
             gameLoopWatch.stop();
             stopWatch.reset();
@@ -203,11 +202,8 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
             startedGame = false;
         }
         adapter.clear();
-        ArrayList<WifiP2pDevice> deviceList = new ArrayList<WifiP2pDevice>(devices.getClientList());
-        for(int i = 0; i < devices.getClientList().size(); i++){
-            WifiP2pDevice device = deviceList.get(i);
-            adapter.add(new User(device));
-        }
+        ArrayList<User> users = new ArrayList<User>(discoveryDevice.values());
+        adapter.addAll(users);
         adapter.notifyDataSetChanged();
     }
 
@@ -344,7 +340,8 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
         if (info.isGroupOwner) {
             Log.d(TAG, "Connected as group owner");
             try {
-                handler = new CoffeeServerSocketHandler(this.handler);
+                msgManager  = new CoffeeServerSocketHandler(this.handler);
+                handler = msgManager;
                 handler.start();
             } catch (IOException e) {
                 Log.d(TAG,
@@ -371,7 +368,7 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                         if(nextCM + 1 >= adapter.getSize()){
                             nextCM = 0;
                         }
-                        MsgManager.getInstance().write(("ContentMaster" + adapter.getItemAddress(nextCM)).getBytes());
+                        msgManager.write(("ContentMaster" + adapter.getItemAddress(nextCM)).getBytes());
                     }
                 }
 
@@ -386,18 +383,26 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                 if(readMessage.contains("User:")) {
                     String username = readMessage.substring(readMessage.indexOf("User: ") + 6, readMessage.indexOf(","));
                     String deviceAddress = readMessage.substring(readMessage.indexOf(", ") + 2);
-                    if(!"Enter Name".equals(username)) {
-                        adapter.setName(deviceAddress, username);
-                    }
+                    WifiP2pDevice device = new WifiP2pDevice();
+                    device.deviceAddress = deviceAddress;
+                    device.deviceName = username;
+                    User person = new User(device);
+                    discoveryDevice.put(deviceAddress, person);
+                    updateUserList();
+
                     Log.d(TAG, username + ": " + deviceAddress);
                 }
                 break;
 
             case MY_HANDLE:
-                //Practically unnecessary; socket should be the same each time due to
-                //it being a server-socket.
-                Object obj = msg.obj;
-                msgManager = (MsgManager) obj;
+                Log.d(TAG, "New Connection");
+                Toast.makeText(this, "New Connection Found.", Toast.LENGTH_SHORT).show();
+                break;
+            case MANAGER_CLOSE:
+                Log.d(TAG, "Disconnect");
+                String address = (String) msg.obj;
+                discoveryDevice.remove(address);
+                updateUserList();
                 break;
         }
         return true;

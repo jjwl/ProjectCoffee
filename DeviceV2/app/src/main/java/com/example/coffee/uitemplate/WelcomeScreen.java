@@ -14,8 +14,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
-import java.util.Queue;
-
 
 public class WelcomeScreen extends Activity implements Handler.Callback {
     public static final String TAG = "tableActivity";

@@ -133,6 +133,9 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
     private void startRegistration() {
         Map<String, String> record = new HashMap<String, String>();
         username = ((EditText)findViewById(R.id.nameEntry)).getText().toString();
+        if("Enter Name".equals(username)) {
+            username = Build.SERIAL;
+        }
         record.put("name", username);
 
         WifiP2pDnsSdServiceInfo service = WifiP2pDnsSdServiceInfo.newInstance(

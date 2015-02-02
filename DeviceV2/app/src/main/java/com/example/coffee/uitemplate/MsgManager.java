@@ -109,7 +109,7 @@ public class MsgManager implements Runnable {
 
     //Process All Your Messages Here - I pass every Message_read handle_message to here.
     public boolean handleMsg(Activity current, String message) {
-
+        Log.d(TAG, "Message:" + message);
         if(message.substring(0,13).equals("ContentMaster")){
             //Build.DEVICE or Build.MODEL
             Log.d("Ms", Build.MODEL + " " + message);

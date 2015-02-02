@@ -89,10 +89,9 @@ public class TabletBroadcastReceiver extends BroadcastReceiver {
                 manager.requestConnectionInfo(channel,
                         (WifiP2pManager.ConnectionInfoListener) activity);
                 //Need to also update connected peer-list here.
-                ((TabletActivity) activity).updateUserList((WifiP2pGroup) intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_GROUP));
             } else {
                 // It's a disconnect
-                ((TabletActivity) activity).updateUserList((WifiP2pGroup) intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_GROUP));
+
             }
         } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION
                 .equals(action)) {

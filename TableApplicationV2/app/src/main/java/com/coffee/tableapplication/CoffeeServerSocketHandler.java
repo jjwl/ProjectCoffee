@@ -3,8 +3,12 @@ package com.coffee.tableapplication;
 import android.os.Handler;
 import android.util.Log;
 
+import org.apache.commons.lang.ObjectUtils;
+
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -17,6 +21,7 @@ public class CoffeeServerSocketHandler extends Thread {
     private final int THREAD_COUNT = 10;
     private Handler handler;
     private static final String TAG = "CoffeeServerSocketHandler";
+    private HashMap<String, MsgManager> listOfSockets = new HashMap<String, MsgManager>();
 
     public CoffeeServerSocketHandler(Handler handler) throws IOException {
         try {
@@ -44,7 +49,8 @@ public class CoffeeServerSocketHandler extends Thread {
             try {
                 // A blocking operation. Initiate a ChatManager instance when
                 // there is a new connection
-                pool.execute(new MsgManager(socket.accept(), handler));
+                MsgManager manager = new MsgManager(socket.accept(), handler, this);
+                pool.execute(manager);
                 Log.d(TAG, "Launching the I/O handler");
 
             } catch (IOException e) {
@@ -59,5 +65,31 @@ public class CoffeeServerSocketHandler extends Thread {
                 break;
             }
         }
+    }
+
+    public boolean write(byte[] buffer) {
+        try {
+            ArrayList<MsgManager> list = new ArrayList<MsgManager>(listOfSockets.values());
+           for(MsgManager e : list) {
+               e.write(buffer);
+           }
+        } catch (IOException e) {
+            Log.e(TAG, "Exception during write", e);
+            return false;
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Exception during write", e);
+            return false;
+        }
+        return true;
+
+    }
+
+    public void addSocket(String name, MsgManager manager) {
+        listOfSockets.put(name, manager);
+    }
+
+    public void removeSocket(String name) {
+        listOfSockets.remove(name);
     }
 }
