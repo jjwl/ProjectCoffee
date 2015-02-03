@@ -15,6 +15,7 @@ import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -59,7 +60,7 @@ public class VideoSearch extends Activity {
         this.videoQueue = new ArrayList<Video>();
         this.videoAdapter = new QueueAdapter(this, videoQueue);
 
-        //this.searchButton = (ImageButton) findViewById(R.id.search_button);
+        this.searchButton = (ImageButton) findViewById(R.id.search_button);
         this.searchEditText = (EditText) findViewById(R.id.searchBar);
         this.searchResultsList = (ListView) findViewById(R.id.searchResults);
         this.searchResultsList.setAdapter(videoAdapter);
@@ -127,8 +128,8 @@ public class VideoSearch extends Activity {
                 final Dialog dialog = new Dialog(context);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setContentView(R.layout.activity_video_search_dialog);
-                ImageButton dialogOkay = (ImageButton) dialog.findViewById(R.id.dialog_button_submit_okay);
-                ImageButton dialogCancel = (ImageButton) dialog.findViewById(R.id.dialog_button_submit_cancel);
+                Button dialogOkay = (Button) dialog.findViewById(R.id.dialog_button_submit_okay);
+                Button dialogCancel = (Button) dialog.findViewById(R.id.dialog_button_submit_cancel);
 
                 dialogOkay.setOnClickListener(new View.OnClickListener() {
                     @Override

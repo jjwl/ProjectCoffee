@@ -18,8 +18,9 @@ import org.json.JSONObject;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayer.Provider;
 import com.google.android.youtube.player.YouTubePlayerFragment;
+import com.google.android.youtube.player.YouTubePlayer.PlayerStateChangeListener;
 
-public class VideoDetail extends YouTubeFailureRecoveryActivity {
+public class VideoDetail extends YouTubeFailureRecoveryActivity implements YouTubePlayer.OnInitializedListener {
     public static final String TAG = "VideoDetail";
 
     private String videoId;
@@ -126,6 +127,7 @@ public class VideoDetail extends YouTubeFailureRecoveryActivity {
                 // auto-generated method stub
             }
         });
+        alert.show();
     }
 
     /*private void initListeners() {
@@ -238,6 +240,7 @@ public class VideoDetail extends YouTubeFailureRecoveryActivity {
     public void onInitializationSuccess(Provider provider, YouTubePlayer player, boolean wasRestored) {
         if (!wasRestored) {
             this.player = player;
+            this.player.setPlayerStateChangeListener(playerStateChangeListener);
             this.player.loadVideo(this.videoId, this.videoTimestamp * 1000);
         }
     }
@@ -246,4 +249,37 @@ public class VideoDetail extends YouTubeFailureRecoveryActivity {
     protected Provider getYouTubePlayerProvider() {
         return (YouTubePlayerFragment) getFragmentManager().findFragmentById(R.id.youtube_fragment);
     }
+
+    private PlayerStateChangeListener playerStateChangeListener = new PlayerStateChangeListener() {
+
+        @Override
+        public void onAdStarted() {
+
+        }
+
+        @Override
+        public void onError(YouTubePlayer.ErrorReason arg0) {
+
+        }
+
+        @Override
+        public void onLoaded(String arg0) {
+
+        }
+
+        @Override
+        public void onLoading() {
+        }
+
+        @Override
+        public void onVideoEnded() {
+            //end activity and go back to queue
+            finish();
+        }
+
+        @Override
+        public void onVideoStarted() {
+
+        }
+    };
 }

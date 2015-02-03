@@ -11,6 +11,9 @@
     <string name="title_activity_cm">Content Master</string>
     <string name="title_activity_queue">Queue</string>
     <string name="title_activity_video_search">Video Search</string>
+    <string name="title_activity_video_detail">Video Detail</string>
+    <string name="activity_dialog_submit">Submit Video</string>
+    <string name="activity_dialog_cancel">Cancel Submit</string>
 
     <string name="error_player">There was an error initializing the YouTubePlayer (%1$s)</string>
 
