@@ -75,11 +75,23 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
         }
         if (jsonifiedVideo != null) {
             receiveVideo(jsonifiedVideo);
+
+            if (contentQueue.size() == 1) {
+                Video vid = contentQueue.peek();
+                Intent intent = new Intent(getApplicationContext(), VideoDetail.class);
+                intent.putExtra("videoId", vid.getVideoId());
+                intent.putExtra("videoTitle", vid.getVideoTitle());
+                intent.putExtra("channelTitle", vid.getVideoChannel());
+                intent.putExtra("videoDescription", vid.getVideoDescription());
+                intent.putExtra("thumbnailUrl", vid.getVideoThumbnailUrl());
+                intent.putExtra("timestamp", vid.getTimestamp());
+                startActivity(intent);
+            }
         }
 
-        Video video;
-        video = new Video("e-ORhEE9VVg", "Taylor Swift - Blank Space", "TaylorSwiftVEVO", "description", "thumbnailUrl");
-        contentQueue.add(video);
+        //Video video;
+        //video = new Video("e-ORhEE9VVg", "Taylor Swift - Blank Space", "TaylorSwiftVEVO", "description", "thumbnailUrl");
+        //contentQueue.add(video);
 
         initListeners();
 
@@ -94,7 +106,6 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
 
     public void createContentQueue() {
         contentQueue = new LinkedList<Video>();
-        showToast("Queue created.");
     }
 
     private void initListeners() {
@@ -104,17 +115,17 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
                 String videoId = ((VideoView) view).getVideo().getVideoId();
                 Video vid = ((VideoView) view).getVideo();
 
-                /*Intent intent = new Intent(getApplicationContext(), VideoDetail.class);
+                Intent intent = new Intent(getApplicationContext(), VideoDetail.class);
                 intent.putExtra("videoId", videoId);
                 intent.putExtra("videoTitle", vid.getVideoTitle());
                 intent.putExtra("channelTitle", vid.getVideoChannel());
                 intent.putExtra("videoDescription", vid.getVideoDescription());
                 intent.putExtra("thumbnailUrl", vid.getVideoThumbnailUrl());
                 intent.putExtra("timestamp", vid.getTimestamp());
-                startActivity(intent);*/
-
-                Intent intent = YouTubeStandalonePlayer.createVideoIntent(Queue.this, DeveloperKey.DEVELOPER_KEY, vid.getVideoId());
                 startActivity(intent);
+
+                //Intent intent = YouTubeStandalonePlayer.createVideoIntent(Queue.this, DeveloperKey.DEVELOPER_KEY, vid.getVideoId());
+                //startActivity(intent);
             }
         });
     }
@@ -233,11 +244,11 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
         MsgManager.getInstance().write("VideoFinished".getBytes());
 
         //Play next video on the queue if it is available
-        contentQueue.remove();
-        if (contentQueue.peek() != null) {
-            Intent intent = YouTubeStandalonePlayer.createVideoIntent(Queue.this, DeveloperKey.DEVELOPER_KEY, contentQueue.peek().getVideoId());
-            startActivity(intent);
-        }
+        //contentQueue.remove();
+        //if (contentQueue.peek() != null) {
+        //    Intent intent = YouTubeStandalonePlayer.createVideoIntent(Queue.this, DeveloperKey.DEVELOPER_KEY, contentQueue.peek().getVideoId());
+        //    startActivity(intent);
+        //}
     }
 
     @Override

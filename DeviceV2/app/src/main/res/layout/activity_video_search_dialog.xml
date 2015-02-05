@@ -4,16 +4,18 @@
     android:layout_height="wrap_content"
     android:orientation="vertical" >
 
-    <ImageButton
+    <Button
         android:id="@+id/dialog_button_submit_okay"
+        android:text="@string/activity_dialog_submit"
         android:layout_width="150dp"
         android:layout_height="40dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:scaleType="fitCenter" />
 
-    <ImageButton
+    <Button
         android:id="@+id/dialog_button_submit_cancel"
+        android:text="@string/activity_dialog_cancel"
         android:layout_width="150dp"
         android:layout_height="40dp"
         android:paddingTop="8dp"

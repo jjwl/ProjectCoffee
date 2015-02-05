@@ -43,6 +43,10 @@
             android:name="com.example.coffee.uitemplate.VideoSearch"
             android:label="@string/title_activity_video_search" >
         </activity>
+        <activity
+            android:name="com.example.coffee.uitemplate.VideoDetail"
+            android:label="@string/title_activity_video_detail" >
+        </activity>
     </application>
 
 </manifest>

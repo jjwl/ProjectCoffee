@@ -22,6 +22,15 @@
         android:clickable="true"
         android:inputType="text|textFilter|textWebEditText|textAutoComplete|textAutoCorrect" />
 
+    <ImageButton
+        android:id="@+id/search_button"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_weight="0"
+        android:scaleType="fitCenter"
+        android:layout_marginLeft="5dp"
+        android:layout_gravity="right" />
+
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
