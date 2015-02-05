@@ -10,7 +10,7 @@
     android:weightSum="1"
     android:id="@+id/videoDetail">
 
-    <ImageButton
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/backBtn"
@@ -18,9 +18,10 @@
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="0dp"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="0dp" />
+        android:layout_marginTop="0dp"
+        android:text="@string/back_text" />
 
-    <ImageButton
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/sendBtn"
@@ -28,7 +29,8 @@
         android:clickable="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:text="@string/send_text" />
 
     <fragment
         android:name="com.google.android.youtube.player.YouTubePlayerFragment"
