@@ -116,9 +116,10 @@ public class VideoDetail extends YouTubeFailureRecoveryActivity implements YouTu
 
                 jsonifiedVideo = jsonVideo.toString();
 
-                intent = new Intent(VideoDetail.this, Queue.class);
+                intent = new Intent();
                 intent.putExtra("message", jsonifiedVideo);
-                startActivity(intent);
+                setResult(RESULT_OK, intent);
+                finish();
             }
         });
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -130,78 +131,6 @@ public class VideoDetail extends YouTubeFailureRecoveryActivity implements YouTu
         alert.show();
     }
 
-    /*private void initListeners() {
-        this.addButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PopupMenu popup = new PopupMenu(context, addButton);
-                popup.getMenuInflater().inflate(R.menu.menu_controls, popup.getMenu());
-
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        JSONObject jsonVideo = new JSONObject();
-                        try {
-                            jsonVideo.put("action", "VIDEO");
-                            jsonVideo.put("videoId", videoId);
-                            jsonVideo.put("videoTitle", videoTitle);
-                            jsonVideo.put("channelTitle", videoChannelTitle);
-                            jsonVideo.put("videoDescription", videoDescription);
-                            jsonVideo.put("thumbnailUrl", videoThumbnailUrl);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        switch (item.getItemId()) {
-                            case R.id.control_item_submit_video:
-                                try {
-                                    jsonVideo.put("videoTimestamp", "0");
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-
-                                jsonifiedVideo = jsonVideo.toString();
-
-                                intent = new Intent(VideoDetail.this, Queue.class);
-                                intent.putExtra("message", jsonifiedVideo);
-                                startActivity(intent);
-
-                                break;
-                            case R.id.control_item_submit_video_from_time:
-                                int currentTimeInMillis = player.getCurrentTimeMillis();
-                                int currentTimeInSec = currentTimeInMillis / 1000;
-
-                                try {
-                                    jsonVideo.put("videoTimestamp", currentTimeInSec);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-
-                                jsonifiedVideo = jsonVideo.toString();
-
-                                intent = new Intent(VideoDetail.this, Queue.class);
-                                intent.putExtra("message", jsonifiedVideo);
-                                startActivity(intent);
-
-                                break;
-                            default:
-                                break;
-                        }
-                        return true;
-                    }
-                });
-
-                popup.show();
-            }
-        });
-
-        this.backButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -274,6 +203,9 @@ public class VideoDetail extends YouTubeFailureRecoveryActivity implements YouTu
         @Override
         public void onVideoEnded() {
             //end activity and go back to queue
+            Intent intent = new Intent();
+            intent.putExtra("updateQueue", true);
+            setResult(RESULT_OK, intent);
             finish();
         }
 
