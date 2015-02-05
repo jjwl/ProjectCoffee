@@ -45,6 +45,7 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
     private QueueAdapter videoAdapter;
     public LinkedList<Video> contentQueue;
     private String jsonifiedVideo;
+    public int index;
 
     private int drawableId;
 
@@ -97,6 +98,7 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String videoId = ((VideoView) view).getVideo().getVideoId();
                 Video vid = ((VideoView) view).getVideo();
+                index = position;
 
                 Intent intent = new Intent(getApplicationContext(), VideoDetail.class);
                 intent.putExtra("videoId", videoId);
@@ -128,6 +130,20 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
                     //for now, do nothing
                     //if queue or something else needs to update after a video ends
                     //put that logic here
+                    Boolean check = data.getBooleanExtra("updateQueue", false);
+                    if (check && (index != contentQueue.size()-1)) {
+                        index++;
+
+                        Video vid = contentQueue.get(index);
+                        Intent intent = new Intent(getApplicationContext(), VideoDetail.class);
+                        intent.putExtra("videoId", vid.getVideoId());
+                        intent.putExtra("videoTitle", vid.getVideoTitle());
+                        intent.putExtra("channelTitle", vid.getVideoChannel());
+                        intent.putExtra("videoDescription", vid.getVideoDescription());
+                        intent.putExtra("thumbnailUrl", vid.getVideoThumbnailUrl());
+                        intent.putExtra("timestamp", vid.getTimestamp());
+                        startActivityForResult(intent, playingVideo);
+                    }
                 }
             }
         }
