@@ -41,6 +41,7 @@ import java.util.HashMap;
 public class VideoSearch extends Activity {
 
     public static final String TAG = "queueSearch";
+    public static final int forVideo = 1;
 
     private EditText searchEditText;
     private ImageButton searchButton;
@@ -118,7 +119,7 @@ public class VideoSearch extends Activity {
                 intent.putExtra("channelTitle", vid.getVideoChannel());
                 intent.putExtra("videoDescription", vid.getVideoDescription());
                 intent.putExtra("thumbnailUrl", vid.getVideoThumbnailUrl());
-                startActivity(intent);
+                startActivityForResult(intent, forVideo);
             }
         });
 
@@ -152,9 +153,10 @@ public class VideoSearch extends Activity {
                         }
 
                         String jsonifiedVideo = jsonVideo.toString();
-                        Intent intent = new Intent(VideoSearch.this, Queue.class);
+                        Intent intent = new Intent();
                         intent.putExtra("message", jsonifiedVideo);
-                        startActivity(intent);
+                        setResult(RESULT_OK, intent);
+                        finish();
                     }
                 });
 
@@ -171,6 +173,20 @@ public class VideoSearch extends Activity {
                 return true;
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK && requestCode == forVideo) {
+            if (data.hasExtra("message")) {
+                String videoToAdd = data.getStringExtra("message");
+                Log.d("onActivityResultCheck", videoToAdd);
+                Intent intent = new Intent();
+                intent.putExtra("message", videoToAdd);
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        }
     }
 
     /**

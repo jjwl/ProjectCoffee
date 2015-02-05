@@ -30,6 +30,8 @@ import java.util.LinkedList;
 
 public class Queue extends Activity implements Handler.Callback, YouTubePlayer.PlayerStateChangeListener {
     public static final String TAG = "tableActivity";
+    public static final int addVideo = 0;
+    public static final int playingVideo = 1;
 
     private WifiP2pManager manager;
 
@@ -69,26 +71,6 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
         this.videoList = (ListView) findViewById(R.id.queueList);
         this.videoList.setAdapter(videoAdapter);
 
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null) {
-            jsonifiedVideo = bundle.getString("message");
-        }
-        if (jsonifiedVideo != null) {
-            receiveVideo(jsonifiedVideo);
-
-            if (contentQueue.size() == 1) {
-                Video vid = contentQueue.peek();
-                Intent intent = new Intent(getApplicationContext(), VideoDetail.class);
-                intent.putExtra("videoId", vid.getVideoId());
-                intent.putExtra("videoTitle", vid.getVideoTitle());
-                intent.putExtra("channelTitle", vid.getVideoChannel());
-                intent.putExtra("videoDescription", vid.getVideoDescription());
-                intent.putExtra("thumbnailUrl", vid.getVideoThumbnailUrl());
-                intent.putExtra("timestamp", vid.getTimestamp());
-                startActivity(intent);
-            }
-        }
-
         //Video video;
         //video = new Video("e-ORhEE9VVg", "Taylor Swift - Blank Space", "TaylorSwiftVEVO", "description", "thumbnailUrl");
         //contentQueue.add(video);
@@ -99,7 +81,8 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
         addBtn.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(Queue.this, VideoSearch.class));
+                Intent intent = new Intent(Queue.this, VideoSearch.class);
+                startActivityForResult(intent, addVideo);
             }
         });
     }
@@ -122,7 +105,7 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
                 intent.putExtra("videoDescription", vid.getVideoDescription());
                 intent.putExtra("thumbnailUrl", vid.getVideoThumbnailUrl());
                 intent.putExtra("timestamp", vid.getTimestamp());
-                startActivity(intent);
+                startActivityForResult(intent, playingVideo);
 
                 //Intent intent = YouTubeStandalonePlayer.createVideoIntent(Queue.this, DeveloperKey.DEVELOPER_KEY, vid.getVideoId());
                 //startActivity(intent);
@@ -130,9 +113,25 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
         });
     }
 
-    /*public int getDrawableId() {
-        return drawableId;
-    }*/
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == addVideo) {
+                if (data.hasExtra("message")) {
+                    String videoToAdd = data.getStringExtra("message");
+                    Log.d("onActivityResultCheck", videoToAdd);
+                    receiveVideo(videoToAdd);
+                }
+            }
+            if (requestCode == playingVideo) {
+                if (data.hasExtra("message")) {
+                    //for now, do nothing
+                    //if queue or something else needs to update after a video ends
+                    //put that logic here
+                }
+            }
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -198,6 +197,20 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
                 metadata.get("name"));
 
         contentQueue.add(video);
+        Log.d("receiveVideo", "video added to queue");
+        videoAdapter.notifyDataSetChanged();
+
+        if (contentQueue.size() == 1) {
+            Video vid = contentQueue.peek();
+            Intent intent = new Intent(getApplicationContext(), VideoDetail.class);
+            intent.putExtra("videoId", vid.getVideoId());
+            intent.putExtra("videoTitle", vid.getVideoTitle());
+            intent.putExtra("channelTitle", vid.getVideoChannel());
+            intent.putExtra("videoDescription", vid.getVideoDescription());
+            intent.putExtra("thumbnailUrl", vid.getVideoThumbnailUrl());
+            intent.putExtra("timestamp", vid.getTimestamp());
+            startActivityForResult(intent, playingVideo);
+        }
     }
 
     /**
