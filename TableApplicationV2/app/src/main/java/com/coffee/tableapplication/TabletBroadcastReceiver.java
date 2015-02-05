@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pGroup;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
@@ -100,6 +101,10 @@ public class TabletBroadcastReceiver extends BroadcastReceiver {
                     .getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
             Log.d(TabletActivity.TAG, "Device status -" + device.status);
 
+        }
+        else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
+            WifiP2pDeviceList list = (WifiP2pDeviceList) intent
+                    .getParcelableExtra(WifiP2pManager.EXTRA_P2P_DEVICE_LIST);
         }
     }
 }

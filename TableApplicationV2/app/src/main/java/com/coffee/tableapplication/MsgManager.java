@@ -39,7 +39,6 @@ public class MsgManager implements Runnable {
             int bytes;
             handler.obtainMessage(TabletActivity.MY_HANDLE, this)
                     .sendToTarget();
-            serverManager.addSocket(socketAddress, this);
 
             while (true) {
                 try {
@@ -50,24 +49,28 @@ public class MsgManager implements Runnable {
                     }
 
                     // Send the obtained bytes to the UI Activity
-                    String readMessage = new String(buffer, "UTF-8");
+                    String readMessage = new String(buffer, 0, bytes);
                     if(readMessage.contains("User:")) {
                        deviceAddress = readMessage.substring(readMessage.indexOf(", ") + 2);
+                       serverManager.addSocket(deviceAddress, this);
                     }
                     handler.obtainMessage(TabletActivity.MESSAGE_READ,
                             bytes, -1, buffer).sendToTarget();
 
-                } catch (IOException e) {
+                } catch (Exception e) {
                     Log.e(TAG, "disconnected", e);
+                    break;
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {
+                Log.d(TAG, "Sending message to remove device..." + deviceAddress);
+                handler.obtainMessage(TabletActivity.MANAGER_CLOSE, deviceAddress).sendToTarget();
+                Log.d(TAG, "Removing from device list...");
+                serverManager.removeSocket(deviceAddress);
                 socket.close();
-                handler.obtainMessage(TabletActivity.MANAGER_CLOSE, deviceAddress);
-                serverManager.removeSocket(socketAddress);
             } catch (IOException e) {
                 e.printStackTrace();
             }
