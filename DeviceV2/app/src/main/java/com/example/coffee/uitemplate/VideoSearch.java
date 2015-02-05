@@ -44,7 +44,7 @@ public class VideoSearch extends Activity {
     public static final int forVideo = 1;
 
     private EditText searchEditText;
-    private ImageButton searchButton;
+    private Button searchButton;
     private ListView searchResultsList;
 
     private QueueAdapter videoAdapter;
@@ -61,7 +61,7 @@ public class VideoSearch extends Activity {
         this.videoQueue = new ArrayList<Video>();
         this.videoAdapter = new QueueAdapter(this, videoQueue);
 
-        this.searchButton = (ImageButton) findViewById(R.id.search_button);
+        this.searchButton = (Button) findViewById(R.id.search_button);
         this.searchEditText = (EditText) findViewById(R.id.searchBar);
         this.searchResultsList = (ListView) findViewById(R.id.searchResults);
         this.searchResultsList.setAdapter(videoAdapter);
