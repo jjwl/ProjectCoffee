@@ -48,8 +48,7 @@
     <Button android:id="@+id/button_video_submission_options"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:rotation="90"
-        android:text="@string/add_queue_text" />
+        android:text="@string/view_text" />
      <!--android:src="@drawable/menu_icon_vertical_orange_12"
         android:background="@null" />-->
 

@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 
@@ -29,9 +30,6 @@ public class VideoDetail extends YouTubeFailureRecoveryActivity implements YouTu
     private String videoThumbnailUrl;
     private String videoChannelTitle;
     private int videoTimestamp;
-
-    private ImageButton addButton;
-    private ImageButton backButton;
 
     private Context context;
     private YouTubePlayer player;
@@ -64,7 +62,7 @@ public class VideoDetail extends YouTubeFailureRecoveryActivity implements YouTu
         Boolean queueStart = bundle.getBoolean("queuestart");
 
         // handles back button
-        ImageButton backBtn = (ImageButton)findViewById(R.id.backBtn);
+        Button backBtn = (Button)findViewById(R.id.backBtn);
         backBtn.setOnClickListener(new ImageButton.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,7 +71,7 @@ public class VideoDetail extends YouTubeFailureRecoveryActivity implements YouTu
         });
 
         // handles send/add button
-        ImageButton sendBtn = (ImageButton)findViewById(R.id.sendBtn);
+        Button sendBtn = (Button)findViewById(R.id.sendBtn);
         sendBtn.setOnClickListener(new ImageButton.OnClickListener() {
             @Override
             public void onClick(View v) {

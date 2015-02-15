@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -17,7 +18,7 @@ public class VideoView extends LinearLayout {
     private TextView title;
     private TextView channel;
     private TextView description;
-    private ImageButton videoOptionsButton;
+    private Button videoOptionsButton;
 
     private Context context;
 
@@ -34,7 +35,7 @@ public class VideoView extends LinearLayout {
         this.title = (TextView) findViewById(R.id.video_title);
         this.channel = (TextView) findViewById(R.id.video_channel);
         this.description = (TextView) findViewById(R.id.video_description);
-        this.videoOptionsButton = (ImageButton) findViewById(R.id.button_video_submission_options);
+        this.videoOptionsButton = (Button) findViewById(R.id.button_video_submission_options);
 
         this.setVideo(video);
 
