@@ -44,7 +44,7 @@ public class MsgManager implements Runnable {
 
     private InputStream iStream;
     private OutputStream oStream;
-    private static final String TAG = "ChatHandler";
+    private static final String TAG = "MsgManager";
 
     public void updateHandler(Handler handle, WifiP2pManager  manager, WifiP2pManager.Channel channel) {
 
@@ -76,6 +76,7 @@ public class MsgManager implements Runnable {
                 try {
                     // Read from the InputStream
                     bytes = iStream.read(buffer);
+                    Log.d(TAG, "" + bytes);
                     if (bytes == -1) {
                         break;
                     }
@@ -86,12 +87,16 @@ public class MsgManager implements Runnable {
                             bytes, -1, buffer).sendToTarget();
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
+                    break;
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {
+                Log.d("Ms", "Disconnected.");
+                handler.obtainMessage(MESSAGE_READ,
+                        "Disconnected").sendToTarget();
                 socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -120,6 +125,9 @@ public class MsgManager implements Runnable {
             //Kudos Loop
                 current.startActivity(new Intent(current, Kudos.class));
             }
+        }
+        else if("Disconnected".equals(message)) {
+            current.startActivity(new Intent(current, DeviceDiscoveryActivity.class));
         }
         return true;
     }

@@ -72,6 +72,7 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
     private Random rand = null;
 
     private Activity thisContext = this;
+    private BroadcastManager broadcastRepeater = null;
 
     private Map<String, User> discoveryDevice = new HashMap<String, User>();
 
@@ -128,10 +129,15 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                     msgManager.write(("ContentMaster" + adapter.getItemAddress(nextCM)).getBytes());
                     gameLoopWatch.start();
                     startedGame = true;
+                    setContentView(R.layout.activity_main_screen);
+                    ListView userList = (ListView) findViewById(R.id.scoreboard);
+                    userList.setAdapter(adapter);
                 }
             }
         });
         registerServerService();
+        broadcastRepeater = new BroadcastManager(this);
+        broadcastRepeater.start();
     }
 
     public void quitGame(){
@@ -186,14 +192,56 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.menu_quit) {
+            setContentView(R.layout.activity_tablet);
+            startedGame = false;
+            ListView userList = (ListView) findViewById(R.id.regList);
+            userList.setAdapter(adapter);
+            adapter.updateAll();
+            adapter.notifyDataSetChanged();
+            Button playBtn = (Button)findViewById(R.id.playBtn);
+            playBtn.setOnClickListener(new Button.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(!startedGame) {
+                        if (serviceRequest != null) {
+                            manager.removeLocalService(channel, myService,
+                                    new WifiP2pManager.ActionListener() {
+
+                                        @Override
+                                        public void onSuccess() {
+                                        }
+
+                                        @Override
+                                        public void onFailure(int arg0) {
+                                        }
+                                    });
+                        }
+                        registerServerService();
+                    }
+
+                    //Start Content Master thread.
+
+                    if(adapter.getSize() > 0 && !startedGame) {
+                        rand = new Random();
+                        nextCM = rand.nextInt(adapter.getSize());
+                        Log.d(TabletActivity.TAG, "content master : " + adapter.getItemAddress(nextCM));
+                        msgManager.write(("ContentMaster" + adapter.getItemAddress(nextCM)).getBytes());
+                        gameLoopWatch.start();
+                        startedGame = true;
+                        setContentView(R.layout.activity_main_screen);
+                        ListView userList = (ListView) findViewById(R.id.scoreboard);
+                        userList.setAdapter(adapter);
+                    }
+                }
+            });
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    public void updateUserList() {
+/*    public void updateUserList() {
         if(discoveryDevice.size() == 0 && startedGame) {
             stopWatch.stop();
             gameLoopWatch.stop();
@@ -205,9 +253,9 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
         ArrayList<User> users = new ArrayList<User>(discoveryDevice.values());
         adapter.addAll(users);
         adapter.notifyDataSetChanged();
-    }
+    }*/
 
-    private void registerServerService() {
+    public void registerServerService() {
 
         Map<String, String> record = new HashMap<String, String>();
         //record.put(TXTRECORD_PROP_AVAILABLE, "visible");
@@ -364,9 +412,17 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                     //Check current time, compare with start time, if > 2 min,
                     // send cm packet and update start time. Otherwise ignore.
                     if(gameLoopWatch.getTime() > 1000 * roundTime * 60){
+                        int originalCM = nextCM;
                         nextCM++;
-                        if(nextCM + 1 >= adapter.getSize()){
+                        if (nextCM + 1 >= adapter.getSize()) {
                             nextCM = 0;
+                        }
+                        while(adapter.getCount() != 0 && !adapter.isOnline(nextCM)){
+                            adapter.removePerson(nextCM);
+                            nextCM++;
+                            if (nextCM + 1 >= adapter.getSize()) {
+                                nextCM = 0;
+                            }
                         }
                         msgManager.write(("ContentMaster" + adapter.getItemAddress(nextCM)).getBytes());
                     }
@@ -384,11 +440,15 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                     String username = readMessage.substring(readMessage.indexOf("User: ") + 6, readMessage.indexOf(","));
                     String deviceAddress = readMessage.substring(readMessage.indexOf(", ") + 2);
                     WifiP2pDevice device = new WifiP2pDevice();
-                    device.deviceAddress = deviceAddress;
-                    device.deviceName = username;
-                    User person = new User(device);
-                    discoveryDevice.put(deviceAddress, person);
-                    updateUserList();
+                    if(!adapter.hasPerson(deviceAddress)) {
+                        device.deviceAddress = deviceAddress;
+                        device.deviceName = username;
+                        User person = new User(device);
+                        adapter.addPerson(deviceAddress, person);
+                    }
+                    else {
+                        adapter.updateConnected(deviceAddress, true);
+                    }
 
                     Log.d(TAG, username + ": " + deviceAddress);
                 }
@@ -401,8 +461,27 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
             case MANAGER_CLOSE:
                 Log.d(TAG, "Disconnect");
                 String address = (String) msg.obj;
-                discoveryDevice.remove(address);
-                updateUserList();
+                adapter.updateConnected(address, false);
+
+               if(startedGame == false) {
+                   adapter.removePerson(address);
+               }
+               else if(adapter.getCount() > 1 && adapter.getItemAddress(nextCM).equals(address)) {
+                   nextCM++;
+                   if (nextCM + 1 >= adapter.getSize()) {
+                       nextCM = 0;
+                   }
+                   while(adapter.getCount() != 0 && !adapter.isOnline(nextCM)){
+                       adapter.removePerson(nextCM);
+                       nextCM++;
+                       if (nextCM + 1 >= adapter.getSize()) {
+                           nextCM = 0;
+                       }
+                   }
+                   msgManager.write(("ContentMaster" + adapter.getItemAddress(nextCM)).getBytes());
+                   Log.d(TabletActivity.TAG, "Content master : " + adapter.getItemAddress(nextCM));
+                }
+                registerServerService();
                 break;
         }
         return true;

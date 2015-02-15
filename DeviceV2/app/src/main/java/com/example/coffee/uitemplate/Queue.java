@@ -171,14 +171,14 @@ public class Queue extends Activity implements Handler.Callback, YouTubePlayer.P
     @Override
     public void onResume() {
         super.onResume();
-        //receiver = new WiFiDirectBroadcastReceiver(manager, channel, this);
-        //registerReceiver(receiver, intentFilter);
+        receiver = new WiFiDirectBroadcastReceiver(manager, channel, this);
+        registerReceiver(receiver, intentFilter);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        //unregisterReceiver(receiver);
+        unregisterReceiver(receiver);
     }
 
     @Override

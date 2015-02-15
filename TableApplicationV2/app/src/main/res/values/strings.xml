@@ -8,5 +8,7 @@
     <string name="play_button">Play</string>
     <string name="quit_button">Quit</string>
     <string name="kudos_received">Kudos Recieved</string>
+    <string name="menu_quit">Quit</string>
+    <string name="title_activity_welcome_screen">Main Screen</string>
 
 </resources>
