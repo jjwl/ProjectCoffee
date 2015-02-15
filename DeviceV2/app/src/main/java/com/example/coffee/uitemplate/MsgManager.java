@@ -120,6 +120,11 @@ public class MsgManager implements Runnable {
             //Kudos Loop
                 current.startActivity(new Intent(current, Kudos.class));
             }
+        }else if(message.substring(0,13).equals("Quit")){
+            Log.d("Ms", "Quitting");
+            //Display score and wait for ContentMaster packet again
+
+
         }
         return true;
     }

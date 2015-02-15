@@ -135,7 +135,9 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
     }
 
     public void quitGame(){
+        msgManager.write(("Quit").getBytes());
         startedGame = false;
+        //Calculate scores and display them
      }
 
     @Override
@@ -359,6 +361,11 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                 // construct a string from the valid bytes in the buffer
                 String readMessage = new String(readBuf, 0, msg.arg1);
                 Log.d(TAG, readMessage);
+
+                if(readMessage.contains("QuitAck")){
+                    //Change Activity to Play Again Screen
+
+                }
 
                 if(readMessage.contains("VideoFinished")) {
                     //Check current time, compare with start time, if > 2 min,

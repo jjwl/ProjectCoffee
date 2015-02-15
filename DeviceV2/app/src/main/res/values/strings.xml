@@ -17,8 +17,8 @@
 
     <string name="error_player">There was an error initializing the YouTubePlayer (%1$s)</string>
     <string name="search_text">Search</string>
-    <string name="add_queue_text">Add to Queue</string>
-    <string name="send_text">Send</string>
+    <string name="view_text">View</string>
+    <string name="add_text">Add</string>
     <string name="back_text">Back</string>
 
 </resources>
