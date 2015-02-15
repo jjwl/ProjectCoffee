@@ -9,7 +9,9 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 //import static android.app.PendingIntent.getActivity;
 
@@ -19,11 +21,65 @@ import java.util.List;
 public class UsersListAdapter extends ArrayAdapter<User> {
 
     private List<User> items;
+    private Map<String, User> discoveryDevice = new HashMap<String, User>();
 
     public UsersListAdapter(Context context, int resource, int textViewResourceId,
                                List<User> objects) {
         super(context, resource, textViewResourceId, objects);
         items = objects;
+    }
+
+    public void addPerson(String address, User person) {
+        discoveryDevice.put(address, person);
+        items.clear();
+        items.addAll(discoveryDevice.values());
+        this.sort(new Comparator<User>() {
+            @Override
+            public int compare(User lhs, User rhs) {
+                return lhs.compareTo(rhs);
+            }
+        });
+        this.notifyDataSetChanged();
+    }
+
+    public void removePerson(int number) {
+        discoveryDevice.remove(this.getItemAddress(number));
+        items.clear();
+        items.addAll(discoveryDevice.values());
+        this.sort(new Comparator<User>() {
+            @Override
+            public int compare(User lhs, User rhs) {
+                return lhs.compareTo(rhs);
+            }
+        });
+        notifyDataSetChanged();
+    }
+    public void removePerson(String address) {
+        discoveryDevice.remove(address);
+        items.clear();
+        items.addAll(discoveryDevice.values());
+        this.sort(new Comparator<User>() {
+            @Override
+            public int compare(User lhs, User rhs) {
+                return lhs.compareTo(rhs);
+            }
+        });
+        notifyDataSetChanged();
+    }
+
+    public void updateAll() {
+        for(User person : items) {
+            if(discoveryDevice.get(person.device.deviceAddress).online)
+            {
+                person.kudos = 0;
+                discoveryDevice.put(person.device.deviceAddress, person);
+            }
+            else {
+                discoveryDevice.remove(person.device.deviceAddress);
+            }
+        }
+        this.clear();
+        this.addAll(discoveryDevice.values());
     }
 
     @Override
@@ -64,14 +120,46 @@ public class UsersListAdapter extends ArrayAdapter<User> {
     //This gets called whenever kudos gets received by the tabletActivity.
     //String contentMaster: the address of the contentMaster who received the kudos.
     public void updateKudos(String contentMaster){
-        for(int i = 0; i < this.getCount(); i++){
+        User person = discoveryDevice.get(contentMaster);
+        person.kudos++;
+        discoveryDevice.put(contentMaster, person);
+        items.clear();
+        items.addAll(discoveryDevice.values());
+        /*for(int i = 0; i < this.getCount(); i++){
             if(this.getItem(i).device.deviceAddress == contentMaster){
                 this.getItem(i).kudos++;
                 notifyDataSetChanged();
                 return;
             }
-        }
+        }*/
 
+    }
+
+    public int getScore(int num) {
+        return items.get(num).kudos;
+    }
+
+    public int getScore(String address) {
+        return discoveryDevice.get(address).kudos;
+    }
+
+    public void updateConnected(String address, boolean connected) {
+        User person = discoveryDevice.get(address);
+        person.online = connected;
+    }
+
+    public boolean isOnline(String address) {
+        return discoveryDevice.get(address).online;
+    }
+
+    public boolean isOnline(int cM) {
+        String address = this.getItemAddress(cM);
+        return discoveryDevice.get(address).online;
+    }
+
+
+    public boolean hasPerson(String address) {
+        return discoveryDevice.containsKey(address);
     }
 
 

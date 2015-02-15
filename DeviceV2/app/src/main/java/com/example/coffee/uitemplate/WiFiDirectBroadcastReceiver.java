@@ -50,12 +50,18 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
                 // we are connected with the other device, request connection
                 // info to find group owner IP
-                Log.d(DeviceDiscoveryActivity.TAG,
-                        "Connected to p2p network. Requesting list of group members");
-                manager.requestConnectionInfo(channel,
-                        (WifiP2pManager.ConnectionInfoListener) activity);
+                if(activity instanceof DeviceDiscoveryActivity){
+                    Log.d(DeviceDiscoveryActivity.TAG,
+                            "Connected to p2p network. Requesting list of group members");
+                    manager.requestConnectionInfo(channel,
+                            (WifiP2pManager.ConnectionInfoListener) activity);
+                }
             } else {
                 // It's a disconnect
+                if(!(activity instanceof  DeviceDiscoveryActivity)) {
+                    Log.d(DeviceDiscoveryActivity.TAG, "Disconnected from p2p network.");
+                    activity.startActivity(new Intent(activity, DeviceDiscoveryActivity.class));
+                }
             }
         } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION
                 .equals(action)) {
