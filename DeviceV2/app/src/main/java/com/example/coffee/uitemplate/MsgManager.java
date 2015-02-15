@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -120,10 +121,20 @@ public class MsgManager implements Runnable {
             //Kudos Loop
                 current.startActivity(new Intent(current, Kudos.class));
             }
-        }else if(message.substring(0,13).equals("Quit")){
-            Log.d("Ms", "Quitting");
-            //Display score and wait for ContentMaster packet again
-
+        }else if(message.substring(0,4).equals("Quit")){
+            String[] winners = message.split(".");
+            boolean won = false;
+            Log.d("Ms", "Quitting! There is/are: " + winners.length + "winner(s)" );
+            for(int i = 0; i < winners.length; i++){
+                if(winners[i] == device.deviceAddress){
+                    won = true;
+                }
+            }
+            if(won){
+                Toast.makeText(current, "You won! Hit the button on the tablet to play again!", Toast.LENGTH_LONG).show();
+            }else {
+                Toast.makeText(current, "You lost! Hit the button on the tablet to play again!", Toast.LENGTH_LONG).show();
+            }
 
         }
         return true;
