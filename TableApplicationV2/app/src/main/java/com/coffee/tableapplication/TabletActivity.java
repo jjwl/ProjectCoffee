@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -144,7 +145,19 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
     }
 
     public void quitGame(){
-        msgManager.write(("Quit").getBytes());
+        String winnerAddress = "";
+        int[] scores = new int[adapter.getSize()];
+
+        for(int i = 0; i < adapter.getSize(); i++){
+            scores[i] = adapter.getScore(i);
+        }
+        Arrays.sort(scores);
+        for(int i = 0; i < adapter.getSize(); i++){
+            if(scores[adapter.getSize() - 1] == adapter.getScore(i)){
+                winnerAddress += "." + adapter.getItemAddress(i);
+            }
+        }
+        msgManager.write(("Quit" + winnerAddress).getBytes());
         startedGame = false;
         //Calculate scores and display them
      }
