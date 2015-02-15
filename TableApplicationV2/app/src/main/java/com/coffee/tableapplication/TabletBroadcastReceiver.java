@@ -14,6 +14,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 /**
  * Created by Sheng-Han on 12/6/2014.
@@ -105,6 +106,7 @@ public class TabletBroadcastReceiver extends BroadcastReceiver {
         else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
             WifiP2pDeviceList list = (WifiP2pDeviceList) intent
                     .getParcelableExtra(WifiP2pManager.EXTRA_P2P_DEVICE_LIST);
+            ((TabletActivity)activity).updateList(list);
         }
     }
 }

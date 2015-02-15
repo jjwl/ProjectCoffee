@@ -2,12 +2,14 @@ package com.coffee.tableapplication;
 
 import android.content.Context;
 import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -123,15 +125,13 @@ public class UsersListAdapter extends ArrayAdapter<User> {
         User person = discoveryDevice.get(contentMaster);
         person.kudos++;
         discoveryDevice.put(contentMaster, person);
-        items.clear();
-        items.addAll(discoveryDevice.values());
-        /*for(int i = 0; i < this.getCount(); i++){
+        for(int i = 0; i < this.getCount(); i++){
             if(this.getItem(i).device.deviceAddress == contentMaster){
                 this.getItem(i).kudos++;
                 notifyDataSetChanged();
                 return;
             }
-        }*/
+        }
 
     }
 
@@ -145,7 +145,9 @@ public class UsersListAdapter extends ArrayAdapter<User> {
 
     public void updateConnected(String address, boolean connected) {
         User person = discoveryDevice.get(address);
-        person.online = connected;
+        if(person != null) {
+            person.online = connected;
+        }
     }
 
     public boolean isOnline(String address) {
@@ -193,5 +195,17 @@ public class UsersListAdapter extends ArrayAdapter<User> {
                 return;
             }
         }
+    }
+
+    //Returns the address of the disconnected member(s)
+    public ArrayList<String> updateList(WifiP2pDeviceList list) {
+        ArrayList<String> offline = new ArrayList<String>();
+        for(User person : items) {
+            if(list.get(person.device.deviceAddress) == null) {
+                offline.add(person.device.deviceAddress);
+            }
+        }
+
+        return offline;
     }
 }

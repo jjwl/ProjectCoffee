@@ -60,6 +60,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                 // It's a disconnect
                 if(!(activity instanceof  DeviceDiscoveryActivity)) {
                     Log.d(DeviceDiscoveryActivity.TAG, "Disconnected from p2p network.");
+                    MsgManager.getInstance().stop();
                     activity.startActivity(new Intent(activity, DeviceDiscoveryActivity.class));
                 }
             }

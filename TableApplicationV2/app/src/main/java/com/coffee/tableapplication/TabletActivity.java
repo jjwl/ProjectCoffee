@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pGroup;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
@@ -132,6 +133,8 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                     setContentView(R.layout.activity_main_screen);
                     ListView userList = (ListView) findViewById(R.id.scoreboard);
                     userList.setAdapter(adapter);
+                    receiver = new TabletBroadcastReceiver(manager, channel, thisContext);
+                    registerReceiver(receiver, intentFilter);
                 }
             }
         });
@@ -178,6 +181,14 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
         unregisterReceiver(receiver);
     }
 
+    public boolean updateList(WifiP2pDeviceList list) {
+        ArrayList<String> offline = adapter.updateList(list);
+        for(String address : offline) {
+            msgManager.removeSocket(address);
+        }
+        return true;
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -196,6 +207,9 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
         //noinspection SimplifiableIfStatement
         if (id == R.id.menu_quit) {
             setContentView(R.layout.activity_tablet);
+            gameLoopWatch.stop();
+            stopWatch.reset();
+            gameLoopWatch.reset();
             startedGame = false;
             ListView userList = (ListView) findViewById(R.id.regList);
             userList.setAdapter(adapter);
@@ -469,11 +483,13 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                 Log.d(TAG, "Disconnect");
                 String address = (String) msg.obj;
                 adapter.updateConnected(address, false);
+                Log.d(TAG, adapter.getItemAddress(nextCM) + address);
 
                if(startedGame == false) {
                    adapter.removePerson(address);
                }
                else if(adapter.getCount() > 1 && adapter.getItemAddress(nextCM).equals(address)) {
+                   Log.d(TAG, "Updating CM");
                    nextCM++;
                    if (nextCM + 1 >= adapter.getSize()) {
                        nextCM = 0;

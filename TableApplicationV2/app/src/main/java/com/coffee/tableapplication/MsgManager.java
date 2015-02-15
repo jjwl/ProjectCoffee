@@ -80,4 +80,15 @@ public class MsgManager implements Runnable {
     public void write(byte[] buffer) throws IOException {
             oStream.write(buffer);
     }
+
+    public void close() {
+        try {
+            Log.d(TAG, "Sending message to remove device..." + deviceAddress);
+            //handler.obtainMessage(TabletActivity.MANAGER_CLOSE, deviceAddress).sendToTarget();
+            Log.d(TAG, "Closing socket...");
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

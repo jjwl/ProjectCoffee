@@ -291,7 +291,12 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
                 //Only when the entire thing has completed connection, go to welcome screen.
                 MsgManager.getInstance().write(("User: " + username + ", " + MsgManager.getInstance().getDevice()).getBytes());
                 Log.d(TAG, "Connection Success.");
-                startActivity(new Intent(this, WelcomeScreen.class));
+                if(MsgManager.getInstance().gameStarted) {
+                    startActivity(new Intent(this, Kudos.class));
+                }
+                else {
+                    startActivity(new Intent(this, WelcomeScreen.class));
+                }
                 /*manager.removeServiceRequest(channel, serviceRequest, new ActionListener() {
                     @Override
                     public void onSuccess() {

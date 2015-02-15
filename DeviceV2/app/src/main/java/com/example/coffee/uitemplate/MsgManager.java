@@ -28,6 +28,7 @@ public class MsgManager implements Runnable {
     private Handler handler = null; //Current Activity Handler; Changed each time the activity changes.
     private WifiP2pManager manager;
     private WifiP2pManager.Channel channel;
+    public boolean gameStarted = false;
 //    private Context context;
     private int mStartCount = 0;
 
@@ -96,7 +97,7 @@ public class MsgManager implements Runnable {
             try {
                 Log.d("Ms", "Disconnected.");
                 handler.obtainMessage(MESSAGE_READ,
-                        "Disconnected").sendToTarget();
+                        "Disconnected".getBytes()).sendToTarget();
                 socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -116,6 +117,7 @@ public class MsgManager implements Runnable {
     public boolean handleMsg(Activity current, String message) {
         Log.d(TAG, "Message:" + message);
         if(message.substring(0,13).equals("ContentMaster")){
+            gameStarted = true;
             //Build.DEVICE or Build.MODEL
             Log.d("Ms", Build.MODEL + " " + message);
             if(device != null && message.substring(13).equals(device.deviceAddress)) {
@@ -127,6 +129,7 @@ public class MsgManager implements Runnable {
             }
         }else if(message.substring(0,13).equals("Quit")){
             Log.d("Ms", "Quitting");
+            gameStarted = false;
             //Display score and wait for ContentMaster packet again
 
 

@@ -90,6 +90,9 @@ public class CoffeeServerSocketHandler extends Thread {
     }
 
     public void removeSocket(String name) {
+        if(listOfSockets.containsKey(name)) {
+            listOfSockets.get(name).close();
+        }
         listOfSockets.remove(name);
     }
 }
