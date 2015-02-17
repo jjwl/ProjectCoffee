@@ -1,8 +1,10 @@
 package com.coffee.tableapplication;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pDevice;
@@ -521,5 +523,25 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                 break;
         }
         return true;
+    }
+
+    private void createDialog() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setMessage("Play Again?");
+        alert.setCancelable(false);
+        alert.setPositiveButton("Yeah Baby", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // if player says yes to play again
+                // do whatever changes you need / change layout or whatever it is
+            }
+        });
+        alert.setNegativeButton("No Thanks", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // if player says no to play again
+                // auto-generated method stub
+            }
+        });
     }
 }
