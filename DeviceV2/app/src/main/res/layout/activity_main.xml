@@ -27,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
-        android:text="Enter Name"
+        android:hint="Enter Name"
         android:ems="10"
         android:id="@+id/nameEntry"
         android:background="#dbdbdb"

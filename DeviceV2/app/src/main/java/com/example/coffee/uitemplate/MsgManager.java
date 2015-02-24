@@ -109,6 +109,7 @@ public class MsgManager implements Runnable {
     public void write(byte[] buffer) {
         try {
             oStream.write(buffer);
+            Log.d("MsWrite", new String(buffer));
         } catch (IOException e) {
             Log.e(TAG, "Exception during write", e);
         }
@@ -129,19 +130,20 @@ public class MsgManager implements Runnable {
                 current.startActivity(new Intent(current, Kudos.class));
             }
         }else if(message.substring(0,4).equals("Quit")){
-            String[] winners = message.split(".");
+
             boolean won = false;
-            Log.d("Ms", "Quitting! There is/are: " + winners.length + "winner(s)" );
-            for(int i = 0; i < winners.length; i++){
-                if(winners[i] == device.deviceAddress){
-                    won = true;
-                }
+
+            if(message.contains(device.deviceAddress)){
+                won = true;
             }
+
             if(won){
                 Toast.makeText(current, "You won! Hit the button on the tablet to play again!", Toast.LENGTH_LONG).show();
             }else {
                 Toast.makeText(current, "You lost! Hit the button on the tablet to play again!", Toast.LENGTH_LONG).show();
             }
+            MsgManager.getInstance().write("QuitAck".getBytes());
+
         }
         else if("Disconnected".equals(message)) {
             current.startActivity(new Intent(current, DeviceDiscoveryActivity.class));

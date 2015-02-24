@@ -73,6 +73,7 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
     private int kudosLimitTime = 10; //time between sending kudos in seconds
     private int roundTime = 2; //time in between rounds in minutes
     private int nextCM = 0;
+    private int quitCounter = 0;
     private Random rand = null;
 
     private Activity thisContext = this;
@@ -100,10 +101,19 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
         channel = manager.initialize(this, getMainLooper(), null);
 
         Button playBtn = (Button)findViewById(R.id.playBtn);
+        Button quitBtn = (Button)findViewById(R.id.quitBtn);
 
         adapter = new UsersListAdapter(this, android.R.layout.simple_list_item_2, android.R.id.text1,  new ArrayList<User>());
         ListView userList = (ListView) findViewById(R.id.regList);
         userList.setAdapter(adapter);
+
+        quitBtn.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                quitGame();
+            }
+        });
+
         playBtn.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -141,6 +151,46 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                 }
             }
         });
+
+        playBtn.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!startedGame) {
+                    if (serviceRequest != null) {
+                        manager.removeLocalService(channel, myService,
+                                new WifiP2pManager.ActionListener() {
+
+                                    @Override
+                                    public void onSuccess() {
+                                    }
+
+                                    @Override
+                                    public void onFailure(int arg0) {
+                                    }
+                                });
+                    }
+                    registerServerService();
+                }
+
+                //Start Content Master thread.
+
+                if(adapter.getSize() > 0 && !startedGame) {
+                    rand = new Random();
+                    nextCM = rand.nextInt(adapter.getSize());
+                    Log.d(TabletActivity.TAG, "content master : " + adapter.getItemAddress(nextCM));
+                    msgManager.write(("ContentMaster" + adapter.getItemAddress(nextCM)).getBytes());
+                    gameLoopWatch.start();
+                    startedGame = true;
+                    setContentView(R.layout.activity_main_screen);
+                    ListView userList = (ListView) findViewById(R.id.scoreboard);
+                    userList.setAdapter(adapter);
+                    receiver = new TabletBroadcastReceiver(manager, channel, thisContext);
+                    registerReceiver(receiver, intentFilter);
+                }
+            }
+        });
+
+
         registerServerService();
         broadcastRepeater = new BroadcastManager(this);
         broadcastRepeater.start();
@@ -162,6 +212,7 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
         msgManager.write(("Quit" + winnerAddress).getBytes());
         startedGame = false;
         //Calculate scores and display them
+
      }
 
     @Override
@@ -221,51 +272,11 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.menu_quit) {
-            setContentView(R.layout.activity_tablet);
-            gameLoopWatch.stop();
-            stopWatch.reset();
-            gameLoopWatch.reset();
-            startedGame = false;
-            ListView userList = (ListView) findViewById(R.id.regList);
-            userList.setAdapter(adapter);
-            adapter.updateAll();
-            adapter.notifyDataSetChanged();
-            Button playBtn = (Button)findViewById(R.id.playBtn);
-            playBtn.setOnClickListener(new Button.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(!startedGame) {
-                        if (serviceRequest != null) {
-                            manager.removeLocalService(channel, myService,
-                                    new WifiP2pManager.ActionListener() {
+            //gameLoopWatch.stop();
+            //stopWatch.reset();
+            //gameLoopWatch.reset();
+            quitGame();
 
-                                        @Override
-                                        public void onSuccess() {
-                                        }
-
-                                        @Override
-                                        public void onFailure(int arg0) {
-                                        }
-                                    });
-                        }
-                        registerServerService();
-                    }
-
-                    //Start Content Master thread.
-
-                    if(adapter.getSize() > 0 && !startedGame) {
-                        rand = new Random();
-                        nextCM = rand.nextInt(adapter.getSize());
-                        Log.d(TabletActivity.TAG, "content master : " + adapter.getItemAddress(nextCM));
-                        msgManager.write(("ContentMaster" + adapter.getItemAddress(nextCM)).getBytes());
-                        gameLoopWatch.start();
-                        startedGame = true;
-                        setContentView(R.layout.activity_main_screen);
-                        ListView userList = (ListView) findViewById(R.id.scoreboard);
-                        userList.setAdapter(adapter);
-                    }
-                }
-            });
             return true;
         }
 
@@ -441,7 +452,11 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
 
                 if(readMessage.contains("QuitAck")){
                     //Change Activity to Play Again Screen
-
+                    quitCounter++;
+                    if(quitCounter == adapter.getCount()){
+                        createDialog();
+                        quitCounter = 0;
+                    }
                 }
 
                 if(readMessage.contains("VideoFinished")) {
@@ -526,6 +541,7 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
     }
 
     private void createDialog() {
+        Toast.makeText(this, "Quit Dialog", Toast.LENGTH_LONG).show();
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setMessage("Play Again?");
         alert.setCancelable(false);
@@ -534,6 +550,12 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
             public void onClick(DialogInterface dialog, int which) {
                 // if player says yes to play again
                 // do whatever changes you need / change layout or whatever it is
+                setContentView(R.layout.activity_tablet);
+                startedGame = false;
+                ListView userList = (ListView) findViewById(R.id.regList);
+                userList.setAdapter(adapter);
+                adapter.updateAll();
+                adapter.notifyDataSetChanged();
             }
         });
         alert.setNegativeButton("No Thanks", new DialogInterface.OnClickListener() {
@@ -541,7 +563,14 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
             public void onClick(DialogInterface dialog, int which) {
                 // if player says no to play again
                 // auto-generated method stub
+                setContentView(R.layout.activity_tablet);
+                ListView userList = (ListView) findViewById(R.id.regList);
+                userList.setAdapter(adapter);
+                adapter.updateAll();
+                adapter.notifyDataSetChanged();
             }
         });
+
+        alert.show();
     }
 }
