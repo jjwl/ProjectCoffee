@@ -14,11 +14,12 @@
     <string name="title_activity_video_detail">Video Detail</string>
     <string name="activity_dialog_submit">Submit Video</string>
     <string name="activity_dialog_cancel">Cancel Submit</string>
-
     <string name="error_player">There was an error initializing the YouTubePlayer (%1$s)</string>
     <string name="search_text">Search</string>
     <string name="view_text">View</string>
     <string name="add_text">Add</string>
     <string name="back_text">Back</string>
+    <string name="title_activity_winner_message">WinnerMessage</string>
+    <string name="title_activity_lose_message">LoseMessage</string>
 
 </resources>
