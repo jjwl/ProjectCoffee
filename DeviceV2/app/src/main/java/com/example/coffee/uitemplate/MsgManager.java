@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -139,8 +140,10 @@ public class MsgManager implements Runnable {
 
             if(won){
                 Toast.makeText(current, "You won! Hit the button on the tablet to play again!", Toast.LENGTH_LONG).show();
+                current.startActivity(new Intent(current, WinnerMessage.class));
             }else {
                 Toast.makeText(current, "You lost! Hit the button on the tablet to play again!", Toast.LENGTH_LONG).show();
+                current.startActivity(new Intent(current, LoseMessage.class));
             }
             MsgManager.getInstance().write("QuitAck".getBytes());
 

@@ -3,6 +3,7 @@
     package="com.example.coffee.uitemplate" >
 
     <uses-sdk android:minSdkVersion="16" />
+
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
@@ -11,7 +12,9 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <!-- Google Play filtering -->
-    <uses-feature android:name="android.hardware.wifi.direct" android:required="true"/>
+    <uses-feature
+        android:name="android.hardware.wifi.direct"
+        android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -28,24 +31,32 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.coffee.uitemplate.WelcomeScreen"
+            android:name=".WelcomeScreen"
             android:label="@string/title_activity_welcome_screen" >
         </activity>
         <activity
-            android:name="com.example.coffee.uitemplate.Kudos"
+            android:name=".Kudos"
             android:label="@string/title_activity_kudos" >
         </activity>
         <activity
-            android:name="com.example.coffee.uitemplate.Queue"
+            android:name=".Queue"
             android:label="@string/title_activity_queue" >
         </activity>
         <activity
-            android:name="com.example.coffee.uitemplate.VideoSearch"
+            android:name=".VideoSearch"
             android:label="@string/title_activity_video_search" >
         </activity>
         <activity
-            android:name="com.example.coffee.uitemplate.VideoDetail"
+            android:name=".VideoDetail"
             android:label="@string/title_activity_video_detail" >
+        </activity>
+        <activity
+            android:name=".WinnerMessage"
+            android:label="@string/title_activity_winner_message" >
+        </activity>
+        <activity
+            android:name=".LoseMessage"
+            android:label="@string/title_activity_lose_message" >
         </activity>
     </application>
 
