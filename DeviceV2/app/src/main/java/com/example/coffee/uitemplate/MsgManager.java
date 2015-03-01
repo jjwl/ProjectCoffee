@@ -173,6 +173,15 @@ public class MsgManager implements Runnable {
             }
     }
 
+    public void playAgain(Activity activity) {
+       activity.startActivity(new Intent(activity, WelcomeScreen.class));
+    }
+
+    public void cancelPlay(Activity activity) {
+        stop();
+        activity.startActivity(new Intent(activity, DeviceDiscoveryActivity.class));
+    }
+
     public void setDevice(WifiP2pDevice device) {
         this.device = device;
     }
