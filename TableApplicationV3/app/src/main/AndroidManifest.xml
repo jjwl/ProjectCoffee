@@ -16,6 +16,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".TabletActivity"
+            android:label="@string/title_activity_tablet" >
+        </activity>
     </application>
 
 </manifest>
