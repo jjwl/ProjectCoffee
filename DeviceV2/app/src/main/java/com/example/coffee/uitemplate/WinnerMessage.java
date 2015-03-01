@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 
 public class WinnerMessage extends Activity {
@@ -11,7 +13,22 @@ public class WinnerMessage extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_winner_message);
+        setContentView(R.layout.activity_win);
+        final Activity current = this;
+        Button playAgainBtn = (Button) findViewById(R.id.playAgainBtn);
+        playAgainBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MsgManager.getInstance().playAgain(current);
+            }
+        });
+        Button quitBtn = (Button) findViewById(R.id.quitBtn);
+        quitBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MsgManager.getInstance().cancelPlay(current);
+            }
+        });
     }
 
 
@@ -19,6 +36,7 @@ public class WinnerMessage extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_winner_message, menu);
+
         return true;
     }
 

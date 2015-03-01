@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 
 public class LoseMessage extends Activity {
@@ -11,7 +13,22 @@ public class LoseMessage extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_lose_message);
+        setContentView(R.layout.activity_lose);
+        final Activity current = this;
+        Button playAgainBtn = (Button) findViewById(R.id.playAgainBtn);
+        playAgainBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MsgManager.getInstance().playAgain(current);
+            }
+        });
+        Button quitBtn = (Button) findViewById(R.id.quitBtn);
+        quitBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MsgManager.getInstance().cancelPlay(current);
+            }
+        });
     }
 
 

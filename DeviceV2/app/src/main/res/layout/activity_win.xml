@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="#ff304dff"
+    android:id="@+id/winner">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView2"
+        android:src="@drawable/win"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="100dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Play Again"
+        android:id="@+id/playAgainBtn"
+        android:layout_marginBottom="29dp"
+        android:layout_marginRight="45dp"
+        android:layout_marginEnd="45dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@+id/quitBtn"
+        android:layout_toStartOf="@+id/quitBtn" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Quit"
+        android:id="@+id/quitBtn"
+        android:gravity="center"
+        android:layout_marginRight="93dp"
+        android:layout_marginEnd="93dp"
+        android:layout_alignTop="@+id/playAgainBtn"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+</RelativeLayout>
