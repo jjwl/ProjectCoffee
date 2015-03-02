@@ -66,7 +66,7 @@ public class VideoDetail extends YouTubeFailureRecoveryActivity implements YouTu
         backBtn.setOnClickListener(new ImageButton.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(VideoDetail.this, VideoSearch.class));
+                finish();
             }
         });
 
@@ -200,11 +200,7 @@ public class VideoDetail extends YouTubeFailureRecoveryActivity implements YouTu
 
         @Override
         public void onVideoEnded() {
-            //end activity and go back to queue
-            Intent intent = new Intent();
-            intent.putExtra("updateQueue", true);
-            setResult(RESULT_OK, intent);
-            finish();
+
         }
 
         @Override
