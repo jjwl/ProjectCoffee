@@ -100,12 +100,12 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
         manager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
         channel = manager.initialize(this, getMainLooper(), null);
 
-        Button playBtn = (Button)findViewById(R.id.playBtn);
-        Button quitBtn = (Button)findViewById(R.id.quitBtn);
-
         adapter = new UsersListAdapter(this, android.R.layout.simple_list_item_2, android.R.id.text1,  new ArrayList<User>());
         ListView userList = (ListView) findViewById(R.id.regList);
         userList.setAdapter(adapter);
+
+        Button playBtn = (Button)findViewById(R.id.playBtn);
+        Button quitBtn = (Button)findViewById(R.id.quitBtn);
 
         quitBtn.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -194,6 +194,19 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
         registerServerService();
         broadcastRepeater = new BroadcastManager(this);
         broadcastRepeater.start();
+        manager.createGroup(channel,new WifiP2pManager.ActionListener() {
+
+            @Override
+            public void onSuccess() {
+
+                Toast.makeText(TabletActivity.this, "Group Created",Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onFailure(int reason) {
+            }
+        });
     }
 
     public void quitGame(){
@@ -453,8 +466,27 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                 if(readMessage.contains("QuitAck")){
                     //Change Activity to Play Again Screen
                     quitCounter++;
-                    if(quitCounter == adapter.getCount()){
-                        createDialog();
+                    if(quitCounter == adapter.getCount()) {
+                        if(quitCounter > 2) {
+                            setContentView(R.layout.activity_main_screen);
+                            ListView userList = (ListView) findViewById(R.id.regList);
+                            userList.setAdapter(adapter);
+                            adapter.updateAll();
+                            adapter.notifyDataSetChanged();
+
+                            rand = new Random();
+                            nextCM = rand.nextInt(adapter.getSize());
+                            msgManager.write(("ContentMaster" + adapter.getItemAddress(nextCM)).getBytes());
+                        }
+                        else {
+                            setContentView(R.layout.activity_tablet);
+                            ListView userList = (ListView) findViewById(R.id.regList);
+                            userList.setAdapter(adapter);
+                            adapter.updateAll();
+                            adapter.notifyDataSetChanged();
+
+                            buttonSetup();
+                        }
                         quitCounter = 0;
                     }
                 }
@@ -534,6 +566,28 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                    msgManager.write(("ContentMaster" + adapter.getItemAddress(nextCM)).getBytes());
                    Log.d(TabletActivity.TAG, "Content master : " + adapter.getItemAddress(nextCM));
                 }
+                if(quitCounter == adapter.getCount()) {
+                    if(quitCounter > 2) {
+                        setContentView(R.layout.activity_main_screen);
+                        ListView userList = (ListView) findViewById(R.id.regList);
+                        userList.setAdapter(adapter);
+                        adapter.updateAll();
+                        adapter.notifyDataSetChanged();
+
+                        rand = new Random();
+                        nextCM = rand.nextInt(adapter.getSize());
+                        msgManager.write(("ContentMaster" + adapter.getItemAddress(nextCM)).getBytes());
+                    }
+                    else {
+                        setContentView(R.layout.activity_tablet);
+                        ListView userList = (ListView) findViewById(R.id.regList);
+                        userList.setAdapter(adapter);
+                        adapter.updateAll();
+                        adapter.notifyDataSetChanged();
+                        buttonSetup();
+                    }
+                    quitCounter = 0;
+                }
                 registerServerService();
                 break;
         }
@@ -572,5 +626,68 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
         });
 
         alert.show();
+    }
+
+    public void buttonSetup() {
+        Button playBtn = (Button)findViewById(R.id.playBtn);
+        Button quitBtn = (Button)findViewById(R.id.quitBtn);
+
+        quitBtn.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                quitGame();
+            }
+        });
+
+        playBtn.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!startedGame) {
+                    if (serviceRequest != null) {
+                        manager.removeLocalService(channel, myService,
+                                new WifiP2pManager.ActionListener() {
+
+                                    @Override
+                                    public void onSuccess() {
+                                    }
+
+                                    @Override
+                                    public void onFailure(int arg0) {
+                                    }
+                                });
+                    }
+                    registerServerService();
+                }
+
+                //Start Content Master thread.
+
+                if(adapter.getSize() > 0 && !startedGame) {
+                    rand = new Random();
+                    nextCM = rand.nextInt(adapter.getSize());
+                    Log.d(TabletActivity.TAG, "content master : " + adapter.getItemAddress(nextCM));
+                    msgManager.write(("ContentMaster" + adapter.getItemAddress(nextCM)).getBytes());
+                    startedGame = true;
+                    setContentView(R.layout.activity_main_screen);
+                    ListView userList = (ListView) findViewById(R.id.scoreboard);
+                    userList.setAdapter(adapter);
+                    receiver = new TabletBroadcastReceiver(manager, channel, thisContext);
+                    registerReceiver(receiver, intentFilter);
+                }
+            }
+        });
+
+        manager.createGroup(channel,new WifiP2pManager.ActionListener() {
+
+            @Override
+            public void onSuccess() {
+
+                Toast.makeText(TabletActivity.this, "Group Created",Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onFailure(int reason) {
+            }
+        });
     }
 }

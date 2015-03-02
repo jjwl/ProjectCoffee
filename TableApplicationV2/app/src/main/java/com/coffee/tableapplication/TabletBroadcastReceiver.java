@@ -71,6 +71,20 @@ public class TabletBroadcastReceiver extends BroadcastReceiver {
                     Log.d("WifiManager", e.toString());
                 }
 
+                manager.createGroup(channel,new WifiP2pManager.ActionListener() {
+
+                    @Override
+                    public void onSuccess() {
+
+                        Toast.makeText(activity, "Group Created",Toast.LENGTH_SHORT).show();
+
+                    }
+
+                    @Override
+                    public void onFailure(int reason) {
+                    }
+                });
+
             }
             Log.d("WifiP2p", "P2P state changed - " + state);
         } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
