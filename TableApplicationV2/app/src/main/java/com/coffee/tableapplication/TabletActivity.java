@@ -288,6 +288,8 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
             //gameLoopWatch.stop();
             //stopWatch.reset();
             //gameLoopWatch.reset();
+
+
             quitGame();
 
             return true;
@@ -507,6 +509,10 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                                 nextCM = 0;
                             }
                         }
+
+                        gameLoopWatch.stop();
+                        gameLoopWatch.reset();
+                        gameLoopWatch.start();
                         msgManager.write(("ContentMaster" + adapter.getItemAddress(nextCM)).getBytes());
                     }
                 }
