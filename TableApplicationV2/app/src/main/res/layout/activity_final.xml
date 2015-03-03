@@ -1,6 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#4b4b4b"
+    android:weightSum="1"
+    android:id="@+id/TableFinal">
 
-</LinearLayout>
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/firstPlace"
+        android:layout_marginBottom="41dp"
+        android:layout_marginLeft="48dp"
+        android:text="Name"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:text="Name"
+        android:ems="10"
+        android:id="@+id/secondPlace"
+        android:layout_alignTop="@+id/firstPlace"
+        android:layout_toRightOf="@+id/firstPlace"
+        android:layout_toEndOf="@+id/firstPlace" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:text="Name"
+        android:ems="10"
+        android:id="@+id/thirdPlace"
+        android:layout_alignTop="@+id/firstPlace"
+        android:layout_toRightOf="@+id/firstPlace"
+        android:layout_toEndOf="@+id/firstPlace" />
+
+    <ImageView
+        android:layout_width="1dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/gold"
+        android:src="@drawable/gold"
+        android:layout_alignBottom="@+id/secondPlace" />
+
+    <ImageView
+        android:layout_width="1dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/silver"
+        android:src="@drawable/silver"
+        android:layout_alignBottom="@+id/firstPlace"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/bronze"
+        android:src="@drawable/bronze"
+        android:layout_above="@+id/firstPlace"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>
