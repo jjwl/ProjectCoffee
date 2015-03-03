@@ -6,6 +6,7 @@ import android.util.Log;
  * Created by Sheng-Han on 2/15/2015.
  */
 public class BroadcastManager extends Thread{
+    boolean running = true;
     TabletActivity activity = null;
     public BroadcastManager(TabletActivity activity) {
         this.activity = activity;
@@ -13,9 +14,9 @@ public class BroadcastManager extends Thread{
 
     @Override
     public void run() {
-        while(true) {
+        while(running) {
             try {
-                activity.registerServerService();
+                activity.startDiscovery();
 
 
                 try {
@@ -29,5 +30,9 @@ public class BroadcastManager extends Thread{
                 Log.d("BroadcastManager", e.toString());
             }
         }
+    }
+
+    public void kill() {
+        running = false;
     }
 }

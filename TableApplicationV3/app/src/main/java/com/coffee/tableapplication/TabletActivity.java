@@ -46,11 +46,12 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
     public static final int GAME_STOP = 0x400 + 3;
     public static final int MANAGER_OPEN = 0x400 + 4;
     public static final int MANAGER_CLOSE = 0x400 + 5;
+    public static final int GET_USERS = 0x400 + 6;
+    public static final int GET_CONTENTMASTER = 0x400 + 7;
 
     //User managing
     private CoffeeServerHandler msgManager;
     private UserData userlist = new UserData();
-    private HashMap<String, User> playerList = new HashMap<String, User>();
     private ArrayList<User> roundList = new ArrayList<User>();
     private RegistrationListFragment registrationList;
     private ScoreboardFragment scoreboardFragment;
@@ -85,9 +86,10 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
         getFragmentManager().beginTransaction()
                 .add(R.id.container_root, registrationList, pageName).commit();
 
+        gameLoopWatch = new StopWatch();
+        stopWatch = new StopWatch();
+
         registerServerService();
-        broadcastRepeater = new BroadcastManager(this);
-        broadcastRepeater.start();
     }
 
     @Override
@@ -95,12 +97,15 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
         super.onResume();
         receiver = new TabletBroadcastReceiver(manager, channel, this);
         registerReceiver(receiver, intentFilter);
+        broadcastRepeater = new BroadcastManager(this);
+        broadcastRepeater.start();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         unregisterReceiver(receiver);
+        broadcastRepeater.kill();
     }
 
     @Override
@@ -118,7 +123,8 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.menu_quit) {
+            quitGame();
             return true;
         }
 
@@ -136,9 +142,27 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
 
                 if(readMessage.contains("QuitAck")){
                     //Change Activity to Play Again Screen
-                    if(userlist.quit()){
-                        getFragmentManager().beginTransaction()
-                                .replace(R.id.container_root, registrationList, pageName).commit();
+                    if(userlist.quitDone(true)){
+                        if(userlist.players() < 2) {
+                            getFragmentManager().beginTransaction()
+                                    .replace(R.id.container_root, registrationList, pageName).commit();
+                            manager.createGroup(channel, new WifiP2pManager.ActionListener() {
+                                @Override
+                                public void onSuccess() {
+                                    Log.d(TabletActivity.TAG, "Group Created.");
+                                }
+
+                                @Override
+                                public void onFailure(int reason) {
+                                    Log.d(TabletActivity.TAG, "Group creation failed.");
+                                }
+                            });
+                        }
+                        else {
+                            String contentMaster = userlist.nextContentMaster();
+                            msgManager.write(("ContentMaster" + contentMaster).getBytes());
+                            Log.d(TabletActivity.TAG, "Content master : " + contentMaster);
+                        }
                     }
                 }
 
@@ -149,9 +173,11 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
                         Log.d(TAG, "Updating CM");
                         String contentMaster = userlist.nextContentMaster();
                         Log.d(TabletActivity.TAG, "Content master : " + contentMaster);
-                        msgManager.write(("ContentMaster" + roundList.get(nextCM).device.deviceAddress).getBytes());
+                        msgManager.write(("ContentMaster" + contentMaster).getBytes());
                         ((TabletBaseFragment) getFragmentManager().findFragmentByTag(pageName))
                                 .refreshList(userlist.getUserList());
+                        gameLoopWatch.reset();
+                        gameLoopWatch.start();
                     }
 
                 }
@@ -168,27 +194,35 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
                 }
                 break;
             case GAME_START:
-                startedGame = true;
-                scoreboardFragment = new ScoreboardFragment();
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.container_root, scoreboardFragment).commit();
                 userlist.resetList();
+                if(userlist.players() != 0) {
+                    startedGame = true;
+                    scoreboardFragment = new ScoreboardFragment();
+                    getFragmentManager().beginTransaction()
+                            .replace(R.id.container_root, scoreboardFragment, pageName).commit();
+                    Log.d(TAG, "Updating CM");
+                    gameLoopWatch.start();
+                    String contentMaster = userlist.nextContentMaster();
+                    Log.d(TabletActivity.TAG, "Content master : " + contentMaster);
+                    msgManager.write(("ContentMaster" + contentMaster).getBytes());
+                    ((TabletBaseFragment) getFragmentManager().findFragmentByTag(pageName))
+                            .refreshList(userlist.getUserList());
+                }
+                else {
+                    registerServerService();
+                }
                 ((TabletBaseFragment) getFragmentManager().findFragmentByTag(pageName))
                         .refreshList(userlist.getUserList());
+                Log.d(TAG, "Game_start");
                 break;
             case GAME_STOP:
                 quitGame();
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.container_root, registrationList, pageName).commit();
-                userlist.resetList();
-                ((TabletBaseFragment) getFragmentManager().findFragmentByTag(pageName))
-                        .refreshList(userlist.getUserList());
                 break;
             case MANAGER_OPEN:
                 DeviceSocketHandler deviceSocket = (DeviceSocketHandler) msg.obj;
                 String address = deviceSocket.deviceAddress;
                 String username = deviceSocket.username;
-                msgManager.addSocket(username, deviceSocket);
+                msgManager.addSocket(address, deviceSocket);
                 userlist.addUser(address, username);
                 ((TabletBaseFragment) getFragmentManager().findFragmentByTag(pageName))
                         .refreshList(userlist.getUserList());
@@ -211,8 +245,41 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
                         Log.d(TabletActivity.TAG, "Content master : " + contentMaster);
                     }
                 }
+
+                if(userlist.quitDone(false)) {
+                    if(userlist.players() < 2) {
+                        getFragmentManager().beginTransaction()
+                                .replace(R.id.container_root, registrationList, pageName).commit();
+                        manager.createGroup(channel, new WifiP2pManager.ActionListener() {
+                            @Override
+                            public void onSuccess() {
+                                Log.d(TabletActivity.TAG, "Group Created.");
+                            }
+
+                            @Override
+                            public void onFailure(int reason) {
+                                Log.d(TabletActivity.TAG, "Group creation failed.");
+                            }
+                        });
+                    }
+                    else {
+                        String contentMaster = userlist.nextContentMaster();
+                        msgManager.write(("ContentMaster" + contentMaster).getBytes());
+                        Log.d(TabletActivity.TAG, "Content master : " + contentMaster);
+                    }
+                }
+                TabletBaseFragment fragment = (TabletBaseFragment) getFragmentManager().findFragmentByTag(pageName);
+                if(fragment != null) {
+                    fragment.refreshList(userlist.getUserList());
+                }
+                break;
+            case GET_USERS:
                 ((TabletBaseFragment) getFragmentManager().findFragmentByTag(pageName))
                         .refreshList(userlist.getUserList());
+                break;
+            case GET_CONTENTMASTER:
+                ((ScoreboardFragment) getFragmentManager().findFragmentByTag(pageName))
+                        .setContentMaster(userlist.currentMasterName());
                 break;
         }
         return false;
@@ -244,18 +311,18 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
         startDiscovery();
     }
 
-    private void startDiscovery() {
-        manager.discoverServices(channel, new WifiP2pManager.ActionListener() {
+    public void startDiscovery() {
+        manager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
 
             @Override
             public void onSuccess() {
                 //appendStatus("Service discovery initiated");
-                Log.d(TabletActivity.TAG, "Service discovery initiated.");
+                Log.d(TabletActivity.TAG, "Discovery initiated.");
             }
 
             @Override
             public void onFailure(int arg0) {
-                Log.d(TabletActivity.TAG, "Service discovery failed.");
+                Log.d(TabletActivity.TAG, "Discovery failed.");
             }
         });
     }
@@ -295,14 +362,20 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
             }
             if(offline){
                 //Remove socket here.
+                Log.d(TAG, "Removing socket");
                 msgManager.removeSocket(person.device.deviceAddress);
             }
         }
     }
 
     public void quitGame(){
-        msgManager.write(("Quit" + userlist.getWinners()).getBytes());
-        startedGame = false;
+        if(startedGame) {
+            msgManager.write(("Quit" + userlist.getWinners()).getBytes());
+            startedGame = false;
+            ((TabletBaseFragment) getFragmentManager().findFragmentByTag(pageName))
+                    .refreshList(userlist.getUserList());
+            gameLoopWatch.reset();
+        }
         //Calculate scores and display them
     }
 }

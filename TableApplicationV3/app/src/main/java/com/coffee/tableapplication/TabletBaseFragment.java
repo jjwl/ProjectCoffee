@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,8 +30,11 @@ public class TabletBaseFragment extends Fragment {
     }
 
     public void refreshList(ArrayList<User> array) {
-        listAdapter.clear();
-        listAdapter.addAll(array);
-        listAdapter.notifyDataSetChanged();
+        //if(listAdapter != null) {
+            Log.d(TabletActivity.TAG, "Refreshing list...");
+            listAdapter.clear();
+            listAdapter.addAll(array);
+            listAdapter.notifyDataSetChanged();
+        //}
     }
 }
