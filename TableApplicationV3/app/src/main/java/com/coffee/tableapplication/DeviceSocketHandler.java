@@ -47,6 +47,9 @@ public class DeviceSocketHandler implements Runnable{
                         //If this is the login socket - we confirm login.
                         deviceAddress = readMessage.substring(readMessage.indexOf(", ") + 2);
                         username = readMessage.substring(readMessage.indexOf("User: ") + 6, readMessage.indexOf(","));
+                        if(username.isEmpty()) {
+                            username = deviceAddress;
+                        }
                         handler.obtainMessage(TabletActivity.MANAGER_OPEN, this).sendToTarget();
                     }
                     else {
@@ -64,7 +67,7 @@ public class DeviceSocketHandler implements Runnable{
         } finally {
             try {
                 Log.d(TabletActivity.TAG, "Sending message to remove device..." + deviceAddress);
-                handler.obtainMessage(TabletActivity.MANAGER_CLOSE, deviceAddress).sendToTarget();
+                handler.obtainMessage(TabletActivity.MANAGER_CLOSE, this).sendToTarget();
                 socket.close();
             } catch (IOException e) {
                 e.printStackTrace();

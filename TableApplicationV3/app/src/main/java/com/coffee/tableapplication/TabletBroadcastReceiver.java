@@ -47,7 +47,31 @@ public class TabletBroadcastReceiver extends BroadcastReceiver {
             if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
                 // Wifi Direct mode is enabled
                 Log.d(TabletActivity.TAG, "WifiDirect Enabled");
-                Toast.makeText(activity, "WifiP2P enabled", Toast.LENGTH_SHORT);
+                Toast.makeText(activity, "WifiP2P is enabled", Toast.LENGTH_SHORT).show();
+                manager.createGroup(channel, new WifiP2pManager.ActionListener() {
+                    @Override
+                    public void onSuccess() {
+                        Log.d(TabletActivity.TAG, "Group Created.");
+                        manager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
+
+                            @Override
+                            public void onSuccess() {
+                                //appendStatus("Service discovery initiated");
+                                Log.d(TabletActivity.TAG,"Discovery initiated.");
+                            }
+
+                            @Override
+                            public void onFailure(int arg0) {
+                                Log.d(TabletActivity.TAG, "Discovery failed.");
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(int reason) {
+                        Log.d(TabletActivity.TAG, "Group creation failed.");
+                    }
+                });
             } else {
                 Log.d(TabletActivity.TAG, "WifiDirect Disabled");
                 Toast.makeText(activity, "Attempting to turn on wifi direct.", Toast.LENGTH_SHORT).show();
@@ -89,11 +113,10 @@ public class TabletBroadcastReceiver extends BroadcastReceiver {
                         "Connected to p2p network. Requesting connection info.");
                 manager.requestConnectionInfo(channel,
                         (WifiP2pManager.ConnectionInfoListener) activity);
-                //Need to also update connected peer-list here.
             }
         }
         else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
-            //Updates device list - names will be updated as device recieves them.
+            //Updates device list - names will be updated as device receives them.
             WifiP2pDeviceList list = (WifiP2pDeviceList) intent
                     .getParcelableExtra(WifiP2pManager.EXTRA_P2P_DEVICE_LIST);
             ((TabletActivity) activity).updateList(list);

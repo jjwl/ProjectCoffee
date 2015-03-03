@@ -39,7 +39,7 @@ public class ScoreboardListAdapter extends ArrayAdapter<User> {
                 left.setText(device.deviceName);
             }
             if (right != null) {
-                right.setText(device.deviceAddress + "");
+                right.setText(person.kudos + "");
             }
         }
 

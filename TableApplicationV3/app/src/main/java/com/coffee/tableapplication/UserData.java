@@ -7,12 +7,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Random;
 
 /**
  * Created by Sheng-Han on 3/1/2015.
  */
 public class UserData {
-    private int contentMaster = 0;
+    private int contentMaster = -1;
     private int quitAck = 0;
     private ArrayList<User> roundList = new ArrayList<User>();
     private HashMap<String, User> playerList = new HashMap<String, User>();
@@ -33,7 +34,17 @@ public class UserData {
             playerList.get(address).online = true;
         }
         else {
+            int names = 0;
+            for(User person : roundList) {
+                if(person.device.deviceName.equals(username)){
+                    names++;
+                }
+            }
+            if(names > 0) {
+                username = username + " - " + names;
+            }
             playerList.put(address, new User(address, username));
+            roundList.add(new User(address, username));
         }
     }
 
@@ -52,10 +63,16 @@ public class UserData {
     }
 
     public String currentMasterName() {
-        return roundList.get(contentMaster).device.deviceName;
+        if(roundList.size() > contentMaster && contentMaster != -1) {
+            return roundList.get(contentMaster).device.deviceName;
+        }
+        return "No content master set";
     }
     public String currentContentMaster() {
-        return roundList.get(contentMaster).device.deviceAddress;
+        if(roundList.size() > contentMaster) {
+            return roundList.get(contentMaster).device.deviceAddress;
+        }
+        return "";
     }
 
     public int players() {
@@ -63,7 +80,13 @@ public class UserData {
     }
 
     public String nextContentMaster() {
-        contentMaster++;
+        if(contentMaster == -1) {
+            Random randgen = new Random();
+            contentMaster = randgen.nextInt(roundList.size());
+        }
+        else {
+            contentMaster++;
+        }
         if(contentMaster > roundList.size()) {
             contentMaster = 0;
         }
@@ -85,10 +108,13 @@ public class UserData {
         roundList.get(contentMaster).kudos++;
     }
 
-    public boolean quit() {
-        quitAck++;
+    public boolean quitDone(boolean quit) {
+        if(quit) {
+            quitAck++;
+        }
         if(quitAck == roundList.size()) {
             quitAck = 0;
+            contentMaster = -1;
             return true;
         }
         return false;
@@ -99,6 +125,7 @@ public class UserData {
     }
 
     public String getWinners() {
+        resetList();
         Collections.sort(roundList);
         Collections.reverse(roundList);
         String winner = "";

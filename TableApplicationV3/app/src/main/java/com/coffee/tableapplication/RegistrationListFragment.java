@@ -30,6 +30,26 @@ public class RegistrationListFragment extends TabletBaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_user_list, container, false);
+        Button playBtn = (Button)view.findViewById(R.id.playBtn);
+        Button quitBtn = (Button)view.findViewById(R.id.quitBtn);
+
+        playBtn.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(handler != null) {
+                    handler.obtainMessage(TabletActivity.GAME_START).sendToTarget();
+                }
+            }
+        });
+
+        quitBtn.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(handler != null) {
+                    handler.obtainMessage(TabletActivity.GAME_STOP).sendToTarget();
+                }
+            }
+        });
         return view;
     }
 
@@ -41,6 +61,9 @@ public class RegistrationListFragment extends TabletBaseFragment {
                 new ArrayList<User>());
         ListView scoreList = (ListView) view.findViewById(R.id.regList);
         scoreList.setAdapter(listAdapter);
+        if(handler != null) {
+            handler.obtainMessage(TabletActivity.GET_USERS).sendToTarget();
+        }
     }
 
     @Override
@@ -48,31 +71,12 @@ public class RegistrationListFragment extends TabletBaseFragment {
         super.onAttach(activity);
         if(activity instanceof TabletActivity) {
             handler =  ((TabletActivity) activity).getHandler();
-            Button playBtn = (Button)view.findViewById(R.id.playBtn);
-            Button quitBtn = (Button)view.findViewById(R.id.quitBtn);
-
-            playBtn.setOnClickListener(new Button.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(handler != null) {
-                        handler.obtainMessage(TabletActivity.GAME_START).sendToTarget();
-                    }
-                }
-            });
-
-            quitBtn.setOnClickListener(new Button.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(handler != null) {
-                        handler.obtainMessage(TabletActivity.GAME_STOP).sendToTarget();
-                    }
-                }
-            });
         }
     }
 
     @Override
     public void onDetach() {
+        super.onDetach();
         handler = null;
     }
 }
