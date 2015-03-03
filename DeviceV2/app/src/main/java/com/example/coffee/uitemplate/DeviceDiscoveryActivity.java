@@ -268,13 +268,13 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
          * GroupOwnerSocketHandler}
          */
 
-//        if (!p2pInfo.isGroupOwner) {
+        if (!p2pInfo.isGroupOwner) {
             Log.d(TAG, "Connected as peer");
             handler = new ClientSocketHandler(
                     this.myHandler,
                     p2pInfo.groupOwnerAddress);
             handler.start();
-//        }
+        }
     }
 
     @Override

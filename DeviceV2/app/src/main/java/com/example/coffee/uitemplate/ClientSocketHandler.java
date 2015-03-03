@@ -32,7 +32,7 @@ public class ClientSocketHandler extends Thread {
             Log.d(TAG, "Launching the I/O handler");
             chat = MsgManager.getInstance().init(socket, handler);
             new Thread(chat).start();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             try {
                 socket.close();

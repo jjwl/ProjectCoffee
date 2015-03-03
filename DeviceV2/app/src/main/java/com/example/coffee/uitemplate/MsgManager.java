@@ -119,7 +119,7 @@ public class MsgManager implements Runnable {
     //Process All Your Messages Here - I pass every Message_read handle_message to here.
     public boolean handleMsg(Activity current, String message) {
         Log.d(TAG, "Message:" + message);
-        if(message.substring(0,13).equals("ContentMaster")){
+        if(message.length() > 13 && message.substring(0,13).equals("ContentMaster")){
             gameStarted = true;
             //Build.DEVICE or Build.MODEL
             Log.d("Ms", Build.MODEL + " " + message);
@@ -130,7 +130,7 @@ public class MsgManager implements Runnable {
             //Kudos Loop
                 current.startActivity(new Intent(current, Kudos.class));
             }
-        }else if(message.substring(0,4).equals("Quit")){
+        }else if(message.length() > 4 && message.substring(0,4).equals("Quit")){
 
             boolean won = false;
 
@@ -145,7 +145,6 @@ public class MsgManager implements Runnable {
                 Toast.makeText(current, "You lost! Hit the button on the tablet to play again!", Toast.LENGTH_LONG).show();
                 current.startActivity(new Intent(current, LoseMessage.class));
             }
-            MsgManager.getInstance().write("QuitAck".getBytes());
 
         }
         else if("Disconnected".equals(message)) {
@@ -157,12 +156,30 @@ public class MsgManager implements Runnable {
 
     public void stop() {
             // Bring down connection
-            if (manager != null && channel != null) {
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (manager != null && channel != null) {
                 manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
 
                     @Override
                     public void onFailure(int reasonCode) {
                         Log.d(TAG, "Disconnect failed. Reason :" + reasonCode);
+                    }
+
+                    @Override
+                    public void onSuccess() {
+                    }
+
+                });
+
+                manager.clearServiceRequests(channel, new WifiP2pManager.ActionListener() {
+
+                    @Override
+                    public void onFailure(int reasonCode) {
+                        Log.d(TAG, "Clear service requests:" + reasonCode);
                     }
 
                     @Override

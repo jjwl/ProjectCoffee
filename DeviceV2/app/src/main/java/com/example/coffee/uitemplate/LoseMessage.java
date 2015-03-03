@@ -19,6 +19,7 @@ public class LoseMessage extends Activity {
         playAgainBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                MsgManager.getInstance().write("QuitAck".getBytes());
                 MsgManager.getInstance().playAgain(current);
             }
         });
