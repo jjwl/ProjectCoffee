@@ -402,6 +402,7 @@ public class Queue extends ActionBarActivity implements Handler.Callback, YouTub
         public void onMessageReceived(CastDevice castDevice, String namespace, String message) {
             //logic for dealing with received messages here
             Log.d(CCTAG, "onMessageReceived: " + message);
+            onVideoEnded();
         }
     }
 
@@ -439,13 +440,6 @@ public class Queue extends ActionBarActivity implements Handler.Callback, YouTub
             }
         }
     }
-
-    public final Cast.MessageReceivedCallback incomingMsgHandler = new Cast.MessageReceivedCallback(){
-        @Override
-        public void onMessageReceived(CastDevice castDevice, String namespace, String message) {
-
-        }
-    };
 
     private class ConnectionFailedListener implements GoogleApiClient.OnConnectionFailedListener {
         @Override
@@ -554,13 +548,6 @@ public class Queue extends ActionBarActivity implements Handler.Callback, YouTub
         //Emmett put your stuff here
         //Note: this will run after every video that ends
         MsgManager.getInstance().write("VideoFinished".getBytes());
-
-        //Play next video on the queue if it is available
-        //contentQueue.remove();
-        //if (contentQueue.peek() != null) {
-        //    Intent intent = YouTubeStandalonePlayer.createVideoIntent(Queue.this, DeveloperKey.DEVELOPER_KEY, contentQueue.peek().getVideoId());
-        //    startActivity(intent);
-        //}
     }
 
     @Override
