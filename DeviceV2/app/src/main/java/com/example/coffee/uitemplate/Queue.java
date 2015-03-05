@@ -402,7 +402,7 @@ public class Queue extends ActionBarActivity implements Handler.Callback, YouTub
         public void onMessageReceived(CastDevice castDevice, String namespace, String message) {
             //logic for dealing with received messages here
             Log.d(CCTAG, "onMessageReceived: " + message);
-            onVideoEnded();
+            Queue.this.onVideoEnded();
         }
     }
 
@@ -547,6 +547,7 @@ public class Queue extends ActionBarActivity implements Handler.Callback, YouTub
     public void onVideoEnded() {
         //Emmett put your stuff here
         //Note: this will run after every video that ends
+        Log.d("Queue", "onVideoEnded reached");
         MsgManager.getInstance().write("VideoFinished".getBytes());
     }
 
