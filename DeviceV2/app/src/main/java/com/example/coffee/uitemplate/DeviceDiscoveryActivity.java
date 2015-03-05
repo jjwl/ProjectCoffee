@@ -72,7 +72,6 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
             manager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
             channel = manager.initialize(this, getMainLooper(), null);
 
-
             Button regBtn = (Button)findViewById(R.id.registerBtn);
             regBtn.setOnClickListener(new Button.OnClickListener() {
                 @Override
@@ -217,6 +216,7 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = service.deviceAddress;
         config.wps.setup = WpsInfo.PBC;
+        config.groupOwnerIntent = 15;
         if (serviceRequest != null) {
             manager.removeServiceRequest(channel, serviceRequest,
                     new ActionListener() {
@@ -275,6 +275,20 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
                     p2pInfo.groupOwnerAddress);
             handler.start();
         }
+        else {
+            manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
+
+                @Override
+                public void onFailure(int reasonCode) {
+                    Log.d(TAG, "Disconnect failed. Reason :" + reasonCode);
+                }
+
+                @Override
+                public void onSuccess() {
+                }
+
+            });
+        }
     }
 
     @Override
@@ -295,6 +309,7 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
                     startActivity(new Intent(this, Kudos.class));
                 }
                 else {
+                    MsgManager.getInstance().gameStarted = true;
                     startActivity(new Intent(this, WelcomeScreen.class));
                 }
                 /*manager.removeServiceRequest(channel, serviceRequest, new ActionListener() {

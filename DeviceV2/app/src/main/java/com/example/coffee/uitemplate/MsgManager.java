@@ -93,7 +93,7 @@ public class MsgManager implements Runnable {
                     break;
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
@@ -101,7 +101,7 @@ public class MsgManager implements Runnable {
                 handler.obtainMessage(MESSAGE_READ,
                         "Disconnected".getBytes()).sendToTarget();
                 socket.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -196,6 +196,7 @@ public class MsgManager implements Runnable {
 
     public void cancelPlay(Activity activity) {
         stop();
+        gameStarted = false;
         activity.startActivity(new Intent(activity, DeviceDiscoveryActivity.class));
     }
 

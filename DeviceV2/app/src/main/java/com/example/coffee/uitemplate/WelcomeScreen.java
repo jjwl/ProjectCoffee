@@ -1,6 +1,7 @@
 package com.example.coffee.uitemplate;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothClass;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -31,15 +32,19 @@ public class WelcomeScreen extends Activity implements Handler.Callback {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome_screen);
+
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+        intentFilter
+                .addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
+        intentFilter
+                .addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
+
+
         msgManager = MsgManager.getInstance();
-//
-//        Button kudosBtn = (Button)findViewById(R.id.goKudosBtn);
-////        kudosBtn.setOnClickListener(new Button.OnClickListener() {
-////            @Override
-////            public void onClick(View v) {
-////                startActivity(new Intent(WelcomeScreen.this, Kudos.class));
-////            }
-////        });
+        if(!msgManager.gameStarted) {
+            startActivity(new Intent(WelcomeScreen.this, DeviceDiscoveryActivity.class));
+        }
 
         Button queueBtn = (Button)findViewById(R.id.goQueueBtn);
         queueBtn.setOnClickListener(new Button.OnClickListener() {

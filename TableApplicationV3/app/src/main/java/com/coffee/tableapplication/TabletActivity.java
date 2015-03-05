@@ -109,6 +109,23 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
+
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFailure(int reason) {
+
+            }
+        });
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_tablet, menu);

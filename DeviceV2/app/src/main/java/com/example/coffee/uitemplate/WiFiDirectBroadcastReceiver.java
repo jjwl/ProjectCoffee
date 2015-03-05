@@ -72,6 +72,11 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
             Log.d(DeviceDiscoveryActivity.TAG, "Device status -" + device.status);
 
             MsgManager.getInstance().setDevice(device);
+
+            if(WifiP2pDevice.CONNECTED != device.status && !(activity instanceof DeviceDiscoveryActivity)) {
+                MsgManager.getInstance().stop();
+                activity.startActivity(new Intent(activity, DeviceDiscoveryActivity.class));
+            }
         }
     }
 }

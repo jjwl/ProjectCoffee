@@ -62,13 +62,15 @@ public class DeviceSocketHandler implements Runnable{
                     break;
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
                 Log.d(TabletActivity.TAG, "Sending message to remove device..." + deviceAddress);
                 handler.obtainMessage(TabletActivity.MANAGER_CLOSE, this).sendToTarget();
-                socket.close();
+                if(!socket.isClosed()) {
+                    socket.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -85,7 +87,9 @@ public class DeviceSocketHandler implements Runnable{
             Log.d(TabletActivity.TAG, "Sending message to remove device..." + deviceAddress);
             //handler.obtainMessage(TabletActivity.MANAGER_CLOSE, deviceAddress).sendToTarget();
             Log.d(TabletActivity.TAG, "Closing socket...");
-            socket.close();
+            if(!socket.isClosed()) {
+                socket.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
