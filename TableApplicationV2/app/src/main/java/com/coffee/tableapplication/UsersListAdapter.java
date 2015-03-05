@@ -148,6 +148,7 @@ public class UsersListAdapter extends ArrayAdapter<User> {
         if(person != null) {
             person.online = connected;
         }
+        discoveryDevice.put(address, person);
     }
 
     public boolean isOnline(String address) {

@@ -152,44 +152,6 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
             }
         });
 
-        playBtn.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!startedGame) {
-                    if (serviceRequest != null) {
-                        manager.removeLocalService(channel, myService,
-                                new WifiP2pManager.ActionListener() {
-
-                                    @Override
-                                    public void onSuccess() {
-                                    }
-
-                                    @Override
-                                    public void onFailure(int arg0) {
-                                    }
-                                });
-                    }
-                    registerServerService();
-                }
-
-                //Start Content Master thread.
-
-                if(adapter.getSize() > 0 && !startedGame) {
-                    rand = new Random();
-                    nextCM = rand.nextInt(adapter.getSize());
-                    Log.d(TabletActivity.TAG, "content master : " + adapter.getItemAddress(nextCM));
-                    msgManager.write(("ContentMaster" + adapter.getItemAddress(nextCM)).getBytes());
-                    gameLoopWatch.start();
-                    startedGame = true;
-                    setContentView(R.layout.activity_main_screen);
-                    ListView userList = (ListView) findViewById(R.id.scoreboard);
-                    userList.setAdapter(adapter);
-                    receiver = new TabletBroadcastReceiver(manager, channel, thisContext);
-                    registerReceiver(receiver, intentFilter);
-                }
-            }
-        });
-
 
         registerServerService();
         broadcastRepeater = new BroadcastManager(this);
@@ -494,6 +456,7 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                 }
 
                 if(readMessage.contains("VideoFinished")) {
+                    Log.d(TAG, "Checking time...");
                     //Check current time, compare with start time, if > 2 min,
                     // send cm packet and update start time. Otherwise ignore.
                     if(gameLoopWatch.getTime() > 1000 * roundTime * 60){
@@ -502,7 +465,7 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                         if (nextCM + 1 >= adapter.getSize()) {
                             nextCM = 0;
                         }
-                        while(adapter.getCount() != 0 && !adapter.isOnline(nextCM)){
+                        while(adapter.getCount() != 0 && !adapter.isOnline(nextCM) && nextCM != originalCM){
                             adapter.removePerson(nextCM);
                             nextCM++;
                             if (nextCM + 1 >= adapter.getSize()) {
@@ -514,6 +477,7 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                         gameLoopWatch.reset();
                         gameLoopWatch.start();
                         msgManager.write(("ContentMaster" + adapter.getItemAddress(nextCM)).getBytes());
+                        Log.d(TAG, "Content Master: " + adapter.getItemAddress(nextCM));
                     }
                 }
 
@@ -558,11 +522,12 @@ public class TabletActivity extends Activity implements WifiP2pManager.Connectio
                }
                else if(adapter.getCount() > 1 && adapter.getItemAddress(nextCM).equals(address)) {
                    Log.d(TAG, "Updating CM");
+                   int originalCM = nextCM;
                    nextCM++;
                    if (nextCM + 1 >= adapter.getSize()) {
                        nextCM = 0;
                    }
-                   while(adapter.getCount() != 0 && !adapter.isOnline(nextCM)){
+                   while(adapter.getCount() != 0 && !adapter.isOnline(nextCM) && nextCM != originalCM){
                        adapter.removePerson(nextCM);
                        nextCM++;
                        if (nextCM + 1 >= adapter.getSize()) {

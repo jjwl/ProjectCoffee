@@ -79,15 +79,13 @@ public class MsgManager implements Runnable {
                 try {
                     // Read from the InputStream
                     bytes = iStream.read(buffer);
-                    Log.d(TAG, "" + bytes);
-                    if (bytes == -1) {
-                        break;
+                    //Log.d(TAG, "" + bytes);
+                    if(bytes > 0) {
+                        // Send the obtained bytes to the UI Activity
+                        Log.d(TAG, "Rec:" + String.valueOf(buffer));
+                        handler.obtainMessage(MESSAGE_READ,
+                                bytes, -1, buffer).sendToTarget();
                     }
-
-                    // Send the obtained bytes to the UI Activity
-                    Log.d(TAG, "Rec:" + String.valueOf(buffer));
-                    handler.obtainMessage(MESSAGE_READ,
-                            bytes, -1, buffer).sendToTarget();
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
                     break;
@@ -122,12 +120,14 @@ public class MsgManager implements Runnable {
         if(message.length() > 13 && message.substring(0,13).equals("ContentMaster")){
             gameStarted = true;
             //Build.DEVICE or Build.MODEL
-            Log.d("Ms", Build.MODEL + " " + message);
+            Log.d("Ms", device.deviceAddress + " " + message);
             if(device != null && message.substring(13).equals(device.deviceAddress)) {
             //CM Loop
+                Log.d("Ms", "Content Master");
                 current.startActivity(new Intent(current, Queue.class));
             }else{
             //Kudos Loop
+                Log.d("Ms", "Kudos");
                 current.startActivity(new Intent(current, Kudos.class));
             }
         }else if(message.length() > 4 && message.substring(0,4).equals("Quit")){

@@ -80,6 +80,7 @@ public class UserData {
     }
 
     public String nextContentMaster() {
+        int originalMaster = contentMaster;
         if(contentMaster == -1) {
             Random randgen = new Random();
             contentMaster = randgen.nextInt(roundList.size());
@@ -90,7 +91,9 @@ public class UserData {
         if(contentMaster > roundList.size()) {
             contentMaster = 0;
         }
-        while(!roundList.get(contentMaster).online) {
+        while(!roundList.get(contentMaster).online
+                && roundList.size() != 0
+                && contentMaster != originalMaster) {
             removeUser(contentMaster);
             if(contentMaster > roundList.size()) {
                 contentMaster = 0;
@@ -112,7 +115,7 @@ public class UserData {
         if(quit) {
             quitAck++;
         }
-        if(quitAck == roundList.size()) {
+        if(quitAck >= roundList.size()) {
             quitAck = 0;
             contentMaster = -1;
             return true;
@@ -129,10 +132,12 @@ public class UserData {
         Collections.sort(roundList);
         Collections.reverse(roundList);
         String winner = "";
-        int maxKudos = roundList.get(0).kudos;
-        for(User person : roundList) {
-            if(person.kudos == maxKudos) {
-                winner = winner + "." + person.device.deviceAddress;
+        if(roundList.size() > 0) {
+            int maxKudos = roundList.get(0).kudos;
+            for (User person : roundList) {
+                if (person.kudos == maxKudos) {
+                    winner = winner + "." + person.device.deviceAddress;
+                }
             }
         }
         return winner;

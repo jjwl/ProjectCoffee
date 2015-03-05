@@ -99,7 +99,7 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
         @Override
         protected void onStart() {
             MsgManager.getInstance().updateHandler(myHandler, manager, channel);
-            super.onStop();
+            super.onStart();
         }
         @Override
         protected void onDestroy() {
@@ -167,7 +167,6 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
                                                         String registrationType, WifiP2pDevice srcDevice) {
                         // A service has been discovered. Is this our app?
                         Log.d(TAG, "Service Available: " + instanceName);
-                        Toast.makeText(DeviceDiscoveryActivity.this, "Service Available: " + instanceName, Toast.LENGTH_SHORT).show();
                         if (instanceName.equalsIgnoreCase(TABLE_SERVICE)) {
                             //If it is, try to connect
                             Toast.makeText(DeviceDiscoveryActivity.this, "Found service. Trying to connect", Toast.LENGTH_SHORT).show();
@@ -227,6 +226,7 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
 
                         @Override
                         public void onFailure(int arg0) {
+                            Toast.makeText(DeviceDiscoveryActivity.this, "Connection attempt failed.", Toast.LENGTH_SHORT).show();
                         }
                     });
         }
@@ -276,6 +276,8 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
             handler.start();
         }
         else {
+            Log.d(TAG, "Connected as group owner");
+            Toast.makeText(DeviceDiscoveryActivity.this, "Connection attempt failed.", Toast.LENGTH_SHORT).show();
             manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
 
                 @Override
@@ -303,6 +305,7 @@ public class DeviceDiscoveryActivity extends Activity implements ChannelListener
 
             case MsgManager.CONNECTION_SUCCESS:
                 //Only when the entire thing has completed connection, go to welcome screen.
+                Toast.makeText(DeviceDiscoveryActivity.this, "Connection Success.", Toast.LENGTH_SHORT).show();
                 MsgManager.getInstance().write(("User: " + username + ", " + MsgManager.getInstance().getDevice()).getBytes());
                 Log.d(TAG, "Connection Success.");
                 if(MsgManager.getInstance().gameStarted) {
