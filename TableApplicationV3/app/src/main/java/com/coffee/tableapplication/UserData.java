@@ -91,15 +91,15 @@ public class UserData {
         if(contentMaster > roundList.size()) {
             contentMaster = 0;
         }
-        while(!roundList.get(contentMaster).online
-                && roundList.size() != 0
-                && contentMaster != originalMaster) {
+        while(roundList.size() != 0
+                && contentMaster != originalMaster
+                && !playerList.get(roundList.get(contentMaster).device.deviceAddress).online) {
             removeUser(contentMaster);
             if(contentMaster > roundList.size()) {
                 contentMaster = 0;
             }
         }
-        if(roundList.size() != 0) {
+        if(roundList.size() > contentMaster) {
             return roundList.get(contentMaster).device.deviceAddress;
         }
         else {
