@@ -179,8 +179,11 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
                         String contentMaster = userlist.nextContentMaster();
                         Log.d(TabletActivity.TAG, "Content master : " + contentMaster);
                         msgManager.write(("ContentMaster" + contentMaster).getBytes());
-                        ((TabletBaseFragment) getFragmentManager().findFragmentByTag(pageName))
-                                .refreshList(userlist.getUserList());
+                        TabletBaseFragment fragment = (TabletBaseFragment)
+                                getFragmentManager().findFragmentByTag(pageName);
+                        if(fragment != null) {
+                            fragment.refreshList(userlist.getUserList());
+                        }
                         gameLoopWatch.reset();
                         gameLoopWatch.start();
                     }
@@ -191,8 +194,11 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
                     ScoreboardListAdapter adapter = (ScoreboardListAdapter) scoreboardFragment.listAdapter;
                     Toast.makeText(this, readMessage, Toast.LENGTH_LONG).show();
                     userlist.addKudos();
-                    ((TabletBaseFragment) getFragmentManager().findFragmentByTag(pageName))
-                            .refreshList(userlist.getUserList());
+                    TabletBaseFragment fragment = (TabletBaseFragment)
+                            getFragmentManager().findFragmentByTag(pageName);
+                    if(fragment != null) {
+                        fragment.refreshList(userlist.getUserList());
+                    }
                 }
                 break;
             case GAME_START:
@@ -207,14 +213,20 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
                     String contentMaster = userlist.nextContentMaster();
                     Log.d(TabletActivity.TAG, "Content master : " + contentMaster);
                     msgManager.write(("ContentMaster" + contentMaster).getBytes());
-                    ((TabletBaseFragment) getFragmentManager().findFragmentByTag(pageName))
-                            .refreshList(userlist.getUserList());
+                    TabletBaseFragment fragment = (TabletBaseFragment)
+                            getFragmentManager().findFragmentByTag(pageName);
+                    if(fragment != null) {
+                        fragment.refreshList(userlist.getUserList());
+                    }
                 }
                 else {
                     registerServerService();
                 }
-                ((TabletBaseFragment) getFragmentManager().findFragmentByTag(pageName))
-                        .refreshList(userlist.getUserList());
+                TabletBaseFragment fragment = (TabletBaseFragment)
+                        getFragmentManager().findFragmentByTag(pageName);
+                if(fragment != null) {
+                    fragment.refreshList(userlist.getUserList());
+                }
                 Log.d(TAG, "Game_start");
                 break;
             case GAME_STOP:
@@ -226,8 +238,11 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
                 String username = deviceSocket.username;
                 msgManager.addSocket(address, deviceSocket);
                 userlist.addUser(address, username);
-                ((TabletBaseFragment) getFragmentManager().findFragmentByTag(pageName))
-                        .refreshList(userlist.getUserList());
+                fragment = (TabletBaseFragment)
+                        getFragmentManager().findFragmentByTag(pageName);
+                if(fragment != null) {
+                    fragment.refreshList(userlist.getUserList());
+                }
                 Log.d(TAG, "Login:" + username + " - " + address);
                 break;
             case MANAGER_CLOSE:
@@ -262,18 +277,23 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
                         Log.d(TabletActivity.TAG, "Content master : " + contentMaster);
                     }
                 }
-                TabletBaseFragment fragment = (TabletBaseFragment) getFragmentManager().findFragmentByTag(pageName);
+                fragment = (TabletBaseFragment) getFragmentManager().findFragmentByTag(pageName);
                 if(fragment != null) {
                     fragment.refreshList(userlist.getUserList());
                 }
                 break;
             case GET_USERS:
-                ((TabletBaseFragment) getFragmentManager().findFragmentByTag(pageName))
-                        .refreshList(userlist.getUserList());
+                fragment = (TabletBaseFragment)
+                        getFragmentManager().findFragmentByTag(pageName);
+                if(fragment != null) {
+                    fragment.refreshList(userlist.getUserList());
+                }
                 break;
             case GET_CONTENTMASTER:
-                ((ScoreboardFragment) getFragmentManager().findFragmentByTag(pageName))
-                        .setContentMaster(userlist.currentMasterName());
+                if(getFragmentManager().findFragmentByTag(pageName) instanceof ScoreboardFragment) {
+                    ((ScoreboardFragment) getFragmentManager().findFragmentByTag(pageName))
+                            .setContentMaster(userlist.currentMasterName());
+                }
                 break;
         }
         return false;
@@ -367,8 +387,11 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
             msgManager.write(("Quit" + userlist.getWinners()).getBytes());
             startedGame = false;
             userlist.resetList();
-            ((TabletBaseFragment) getFragmentManager().findFragmentByTag(pageName))
-                    .refreshList(userlist.getUserList());
+            TabletBaseFragment fragment = (TabletBaseFragment)
+                    getFragmentManager().findFragmentByTag(pageName);
+            if(fragment != null) {
+                fragment.refreshList(userlist.getUserList());
+            }
             gameLoopWatch.reset();
             Log.d(TAG, "Game_stop");
         }
