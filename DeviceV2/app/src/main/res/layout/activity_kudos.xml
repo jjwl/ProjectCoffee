@@ -30,6 +30,6 @@
         android:layout_centerHorizontal="true"
         android:scaleType="center"
         android:contentDescription="kudos"
-        android:background="@color/transparent" />
+        android:background="#00FFFFFF" />
 
 </RelativeLayout>
