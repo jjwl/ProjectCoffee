@@ -17,7 +17,7 @@
         android:textSize="55dp"
         android:textStyle="bold"
         android:textAlignment="center"
-        android:paddingStart="10dp"
+        android:padding="10dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
@@ -28,6 +28,8 @@
         android:src="@drawable/kudos"
         android:layout_below="@+id/nowPlaying"
         android:layout_centerHorizontal="true"
-        android:scaleType="center" />
+        android:scaleType="center"
+        android:contentDescription="kudos"
+        android:background="@color/transparent" />
 
 </RelativeLayout>
