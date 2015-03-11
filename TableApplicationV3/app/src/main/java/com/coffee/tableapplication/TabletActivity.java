@@ -177,21 +177,29 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
                     if(gameLoopWatch.getTime() > 1000 * roundTime * 60){
                         Log.d(TAG, "Updating CM");
                         String contentMaster = userlist.nextContentMaster();
-                        Log.d(TabletActivity.TAG, "Content master : " + contentMaster);
-                        msgManager.write(("ContentMaster" + contentMaster).getBytes());
-                        TabletBaseFragment fragment = (TabletBaseFragment)
-                                getFragmentManager().findFragmentByTag(pageName);
-                        if(fragment != null) {
-                            fragment.refreshList(userlist.getUserList());
+                        if(contentMaster.isEmpty()) {
+                            quitGame();
                         }
-                        gameLoopWatch.reset();
-                        gameLoopWatch.start();
+                        else {
+                            Log.d(TabletActivity.TAG, "Content master : " + contentMaster);
+                            if(getFragmentManager().findFragmentByTag(pageName) instanceof ScoreboardFragment) {
+                                ((ScoreboardFragment) getFragmentManager().findFragmentByTag(pageName))
+                                        .setContentMaster(userlist.currentMasterName());
+                            }
+                            msgManager.write(("ContentMaster" + contentMaster).getBytes());
+                            TabletBaseFragment fragment = (TabletBaseFragment)
+                                    getFragmentManager().findFragmentByTag(pageName);
+                            if (fragment != null) {
+                                fragment.refreshList(userlist.getUserList());
+                            }
+                            gameLoopWatch.reset();
+                            gameLoopWatch.start();
+                        }
                     }
 
                 }
 
                 if(readMessage.contains("Kudos")) {
-                    ScoreboardListAdapter adapter = (ScoreboardListAdapter) scoreboardFragment.listAdapter;
                     Toast.makeText(this, readMessage, Toast.LENGTH_LONG).show();
                     userlist.addKudos();
                     TabletBaseFragment fragment = (TabletBaseFragment)
@@ -260,8 +268,14 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
                     if(userlist.players() > 1 && address.equals(userlist.currentContentMaster())) {
                         Log.d(TAG, "Updating CM");
                         String contentMaster = userlist.nextContentMaster();
-                        msgManager.write(("ContentMaster" + contentMaster).getBytes());
-                        Log.d(TabletActivity.TAG, "Content master : " + contentMaster);
+                        if(!contentMaster.isEmpty()) {
+                            if(getFragmentManager().findFragmentByTag(pageName) instanceof ScoreboardFragment) {
+                                ((ScoreboardFragment) getFragmentManager().findFragmentByTag(pageName))
+                                        .setContentMaster(userlist.currentMasterName());
+                            }
+                            msgManager.write(("ContentMaster" + contentMaster).getBytes());
+                            Log.d(TabletActivity.TAG, "Content master : " + contentMaster);
+                        }
                     }
                 }
 
@@ -273,6 +287,10 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
                     }
                     else {
                         String contentMaster = userlist.nextContentMaster();
+                        if(getFragmentManager().findFragmentByTag(pageName) instanceof ScoreboardFragment) {
+                            ((ScoreboardFragment) getFragmentManager().findFragmentByTag(pageName))
+                                    .setContentMaster(userlist.currentMasterName());
+                        }
                         msgManager.write(("ContentMaster" + contentMaster).getBytes());
                         Log.d(TabletActivity.TAG, "Content master : " + contentMaster);
                     }
@@ -386,7 +404,6 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
         if(startedGame) {
             msgManager.write(("Quit" + userlist.getWinners()).getBytes());
             startedGame = false;
-            userlist.resetList();
             TabletBaseFragment fragment = (TabletBaseFragment)
                     getFragmentManager().findFragmentByTag(pageName);
             if(fragment != null) {

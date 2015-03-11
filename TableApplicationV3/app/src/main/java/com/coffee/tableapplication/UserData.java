@@ -88,14 +88,14 @@ public class UserData {
         else {
             contentMaster++;
         }
-        if(contentMaster > roundList.size()) {
+        if(contentMaster >= roundList.size()) {
             contentMaster = 0;
         }
         while(roundList.size() != 0
                 && contentMaster != originalMaster
                 && !playerList.get(roundList.get(contentMaster).device.deviceAddress).online) {
             removeUser(contentMaster);
-            if(contentMaster > roundList.size()) {
+            if(contentMaster >= roundList.size()) {
                 contentMaster = 0;
             }
         }
@@ -108,7 +108,9 @@ public class UserData {
     }
 
     public void addKudos() {
-        roundList.get(contentMaster).kudos++;
+        if(roundList.size() > contentMaster && contentMaster != -1) {
+            roundList.get(contentMaster).kudos++;
+        }
     }
 
     public boolean quitDone(boolean quit) {
