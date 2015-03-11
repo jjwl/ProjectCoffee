@@ -110,6 +110,10 @@ public class Queue extends ActionBarActivity implements Handler.Callback, YouTub
                 startActivityForResult(intent, addVideo);
             }
         });
+
+        Toast toast = Toast.makeText(
+                getApplicationContext(), "Your turn to share videos! Press the + button to start searching on Youtube.", Toast.LENGTH_LONG);
+        toast.show();
     }
 
     private void initMediaRouter() {
