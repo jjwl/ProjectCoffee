@@ -31,15 +31,15 @@ public class VideoView extends LinearLayout {
         this.context = context;
 
         this.video = video;
-        this.thumbnail = (ImageView) findViewById(R.id.video_thumbnail);
+        //this.thumbnail = (ImageView) findViewById(R.id.video_thumbnail);
         this.title = (TextView) findViewById(R.id.video_title);
         this.channel = (TextView) findViewById(R.id.video_channel);
         this.description = (TextView) findViewById(R.id.video_description);
-        this.videoOptionsButton = (Button) findViewById(R.id.button_video_submission_options);
+        //this.videoOptionsButton = (Button) findViewById(R.id.button_video_submission_options);
 
         this.setVideo(video);
 
-        initListeners();
+        //initListeners();
     }
 
     public void setVideo(Video vid) {
@@ -62,4 +62,5 @@ public class VideoView extends LinearLayout {
             }
         });
     }
+
 }

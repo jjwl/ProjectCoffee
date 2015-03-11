@@ -18,7 +18,6 @@
         android:textColor="#9b9b9b"
         android:paddingBottom="5dp"
         android:paddingTop="10dp"
-        android:editable="true"
         android:clickable="true"
         android:inputType="text|textFilter|textWebEditText|textAutoComplete|textAutoCorrect" />
 

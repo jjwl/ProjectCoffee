@@ -75,12 +75,10 @@ public class VideoDetail extends YouTubeFailureRecoveryActivity implements YouTu
         sendBtn.setOnClickListener(new ImageButton.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //startActivity(new Intent(VideoView.this, Queue.class));
                 createDialog();
             }
         });
 
-        //initListeners();
 
         YouTubePlayerFragment youTubePlayerFragment =
                 (YouTubePlayerFragment) getFragmentManager().findFragmentById(R.id.youtube_fragment);
