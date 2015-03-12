@@ -20,6 +20,12 @@ public class CoffeeServerHandler extends Thread{
     private Handler handler;
     private HashMap<String, DeviceSocketHandler> listOfSockets = new HashMap<String, DeviceSocketHandler>();
 
+    /**
+     * Constructor that initializes the server socket to which all devices connect to.
+     *
+     * @param handler The callback activity handler.
+     * @throws IOException
+     */
     public CoffeeServerHandler(Handler handler) throws IOException {
         try {
             socket = new ServerSocket(4545);
@@ -40,6 +46,10 @@ public class CoffeeServerHandler extends Thread{
             THREAD_COUNT, THREAD_COUNT, 10, TimeUnit.SECONDS,
             new LinkedBlockingQueue<Runnable>());
 
+
+    /**
+     * Accepts all the incoming device connections and initializes seperate threads to handle them.
+     */
     @Override
     public void run() {
         while (true) {
@@ -65,6 +75,12 @@ public class CoffeeServerHandler extends Thread{
     }
 
 
+    /**
+     * Writes to all sockets attached to the server.
+     *
+     * @param buffer The messages written to the socket
+     * @return Success or failure
+     */
     public boolean write(byte[] buffer) {
         try {
             ArrayList<DeviceSocketHandler> list = new ArrayList<DeviceSocketHandler>(listOfSockets.values());
@@ -80,10 +96,21 @@ public class CoffeeServerHandler extends Thread{
 
     }
 
+    /**
+     * A new socket has connected successfully and sent registration data.
+     *
+     * @param name The address of the connected client.
+     * @param manager The thread that is managing the socket.
+     */
     public void addSocket(String name, DeviceSocketHandler manager) {
         listOfSockets.put(name, manager);
     }
 
+    /**
+     * Remove socket from connection and the server list
+     *
+     * @param name The name of the socket to be removed.
+     */
     public void removeSocket(String name) {
         if(listOfSockets.containsKey(name)) {
             listOfSockets.get(name).close();

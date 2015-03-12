@@ -25,6 +25,10 @@ public class DeviceSocketHandler implements Runnable{
     private InputStream iStream;
     private OutputStream oStream;
 
+    /**
+     * Initializes, registers and then sends all received messages to the activity.
+     *
+     */
     @Override
     public void run() {
         try {
@@ -82,6 +86,9 @@ public class DeviceSocketHandler implements Runnable{
         oStream.write(buffer);
     }
 
+    /**
+     * Shuts down the socket and connection.
+     */
     public void close() {
         try {
             Log.d(TabletActivity.TAG, "Sending message to remove device..." + deviceAddress);

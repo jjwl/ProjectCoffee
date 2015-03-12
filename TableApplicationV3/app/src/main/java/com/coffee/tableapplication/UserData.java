@@ -13,11 +13,15 @@ import java.util.Random;
  * Created by Sheng-Han on 3/1/2015.
  */
 public class UserData {
-    private int contentMaster = -1;
-    private int quitAck = 0;
-    private ArrayList<User> roundList = new ArrayList<User>();
-    private HashMap<String, User> playerList = new HashMap<String, User>();
+    private int contentMaster = -1; //The current content master - -1 if no content master
+    private int quitAck = 0; //How many quit acknowledgements recieved.
+    private ArrayList<User> roundList = new ArrayList<User>(); //The current display list.
+    private HashMap<String, User> playerList = new HashMap<String, User>(); //List of total players.
 
+
+    /**
+     * Resets the list to only the online players and kudos to 0.
+     */
     public void resetList() {
         Collection<User> userList = playerList.values();
         for(User person : userList) {
@@ -29,6 +33,12 @@ public class UserData {
         roundList = new ArrayList<User>(playerList.values());
     }
 
+    /**
+     * Registers the user with the address and if already registered, flag it online.
+     *
+     * @param address The address of the client user.
+     * @param username The screen name of the client user.
+     */
     public void addUser(String address, String username) {
         if(playerList.containsKey(address)) {
             playerList.get(address).online = true;
@@ -48,26 +58,52 @@ public class UserData {
         }
     }
 
+    /**
+     * Flags the user with the corresponding address offline.
+     *
+     * @param address The address of the client user.
+     */
     public void offlineUser(String address) {
         if(playerList.containsKey(address)) {
             playerList.get(address).online = false;
         }
     }
 
+    /**
+     * Removes the user from the list of known users.
+     *
+     * @param address The address of the client user.
+     */
     public void removeUser(String address) {
         roundList.remove(playerList.remove(address));
     }
 
+    /**
+     * Removes the user from the list of known users.
+     *
+     * @param number The number of the user in the round.
+     */
     public void removeUser(int number) {
         playerList.remove(roundList.remove(number).device.deviceAddress);
     }
 
+    /**
+     * Returns the current Content Master's name
+     *
+     * @return The string that is the current content master's name.
+     */
     public String currentMasterName() {
         if(roundList.size() > contentMaster && contentMaster != -1) {
             return roundList.get(contentMaster).device.deviceName;
         }
         return "No content master set";
     }
+
+    /**
+     * Returns the address of the current content master.
+     *
+     * @return The address of the current content master.
+     */
     public String currentContentMaster() {
         if(roundList.size() > contentMaster) {
             return roundList.get(contentMaster).device.deviceAddress;
@@ -75,10 +111,20 @@ public class UserData {
         return "";
     }
 
+    /**
+     * The number of players currently playing.
+     *
+     * @return Number of players currently playing in an int.
+     */
     public int players() {
         return roundList.size();
     }
 
+    /**
+     * Update to the next content master and return his or her address.
+     *
+     * @return The address of the next content master.
+     */
     public String nextContentMaster() {
         int originalMaster = contentMaster;
         if(contentMaster == -1) {
@@ -107,12 +153,21 @@ public class UserData {
         }
     }
 
+    /**
+     * Increase the kudos of the current content master.
+     */
     public void addKudos() {
         if(roundList.size() > contentMaster && contentMaster != -1) {
             roundList.get(contentMaster).kudos++;
         }
     }
 
+    /**
+     * Checks if all the players have quit.
+     *
+     * @param quit Whether or not there was a recent send of a quit acknowledge.
+     * @return True if all the players have quit.
+     */
     public boolean quitDone(boolean quit) {
         if(quit) {
             quitAck++;
@@ -125,10 +180,18 @@ public class UserData {
         return false;
     }
 
+    /**
+     * Returns the  current list of users with their kudos data.
+     * @return The current list of users with all data except online or offline.
+     */
     public ArrayList<User> getUserList() {
         return roundList;
     }
 
+    /**
+     * The winners of the game or the people who got the highest score.
+     * @return All the addresses of the users who got the highest score seperated by a period.
+     */
     public String getWinners() {
         resetList();
         Collections.sort(roundList);

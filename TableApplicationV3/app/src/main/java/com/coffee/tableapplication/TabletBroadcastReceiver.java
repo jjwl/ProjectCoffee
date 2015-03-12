@@ -36,6 +36,12 @@ public class TabletBroadcastReceiver extends BroadcastReceiver {
     }
 
 
+    /**
+     * Activates the WifiP2P, accepts socket connections, and detects disconnects.
+     *
+     * @param context Context of the intent
+     * @param intent the intent itself
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();

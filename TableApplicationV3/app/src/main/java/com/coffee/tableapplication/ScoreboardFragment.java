@@ -28,7 +28,12 @@ import java.util.ArrayList;
 public class ScoreboardFragment extends TabletBaseFragment {
     View view;
 
-    //Sets the view.
+    /**
+     * Sets the view of the scoreboard seen during play.
+     *
+     * @return      The view of the scoreboard
+     * @see         android.app.Fragment
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -36,7 +41,12 @@ public class ScoreboardFragment extends TabletBaseFragment {
         return view;
     }
 
-    //Sets the adapter - show scoreboard list
+    /**
+     * Gets required display info from the activity.
+     *
+     * @return      None.
+     * @see         android.app.Fragment
+     */
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -52,6 +62,13 @@ public class ScoreboardFragment extends TabletBaseFragment {
         }
     }
 
+
+    /**
+     * Gets the callback handler of the activity.
+     *
+     * @return      None.
+     * @see         android.app.Fragment
+     */
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -59,6 +76,15 @@ public class ScoreboardFragment extends TabletBaseFragment {
             handler =  ((TabletActivity) activity).getHandler();
         }
     }
+
+
+    /**
+     * Callback to set the displayed content master.
+     *
+     * @param username The username of the Content Master
+     * @return      None.
+     * @see         android.app.Fragment
+     */
 
     public void setContentMaster(String username) {
         EditText playername = (EditText) view.findViewById(R.id.playerName);

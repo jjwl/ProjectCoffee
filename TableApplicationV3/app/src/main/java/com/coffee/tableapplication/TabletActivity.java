@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Random;
 
 
+
 public class TabletActivity extends Activity implements Handler.Callback, WifiP2pManager.ConnectionInfoListener {
     public static final String TAG = "ProjectCoffeeServerApp";
     //WifiP2p managing
@@ -50,7 +51,7 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
     public static final int GET_CONTENTMASTER = 0x400 + 7;
 
     //User managing
-    private CoffeeServerHandler msgManager;
+    private CoffeeServerHandler msgManager; //Manages all the socket ends (send, disconnect)
     private UserData userlist = new UserData();
     private ArrayList<User> roundList = new ArrayList<User>();
     private RegistrationListFragment registrationList;
@@ -61,13 +62,16 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
     private StopWatch gameLoopWatch = null;
 
     private boolean startedGame = false;
-    private int kudosLimitTime = 10; //time between sending kudos in seconds
     private int roundTime = 2; //time in between rounds in minutes
-    private int nextCM = 0;
-    private int quitCounter = 0;
-    private Random rand = null;
 
 
+    /**
+     * Initializes the required intent filters, WifiP2pManager, fragments, and services.
+     *
+     * @param  savedInstanceState  the saved instance state of the application
+     * @return      none.
+     * @see         android.app.Activity
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +94,12 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
         registerServerService();
     }
 
+    /**
+     * Reinitializes the intent broadcast receiver and the repeater to broadcast services.
+     *
+     * @return      none.
+     * @see         android.app.Activity
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -99,6 +109,12 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
         broadcastRepeater.start();
     }
 
+    /**
+     * Disables the broadcast receiver and repeater while not in the app.
+     *
+     * @return      none.
+     * @see         android.app.Activity
+     */
     @Override
     public void onPause() {
         super.onPause();
@@ -106,6 +122,12 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
         broadcastRepeater.kill();
     }
 
+    /**
+     * Leave group upon app exit.
+     *
+     * @return      none.
+     * @see         android.app.Activity
+     */
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -123,12 +145,25 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
         });
     }
 
+    /**
+     * Set the options menu with quit capability.
+     *
+     * @return      true
+     * @see         android.app.Activity
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_tablet, menu);
         return true;
     }
+
+    /**
+     * Gives logic to the quit option on the menu.
+     *
+     * @return      Selected option success.
+     * @see         android.app.Activity
+     */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -146,6 +181,17 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Callback from other running threads and activities and handles most of the game logic.
+     * MESSAGE_READ messages are messages from the client in String format. GAME_START when the
+     * Play button is pressed on the main screen, GAME_STOP when the quit button is pressed.
+     * MANAGER_OPEN and MANAGER_CLOSE handle the socket connect and disconnects. The main messages
+     * coming from the client are QuitAck, VideoFinished, and Kudos.
+     *
+     * @param msg The message that comes from the device
+     * @return      none.
+     * @see         android.os.Handler.Callback
+     */
     @Override
     public boolean handleMessage(Message msg) {
         switch (msg.what) {
@@ -317,10 +363,23 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
         return false;
     }
 
+    /**
+     * Returns the callback handler of the activity.
+     *
+     * @return      The callback Handler
+     * @see         android.os.Handler
+     */
     public Handler getHandler() {
         return this.handler;
     }
 
+
+    /**
+     * Registers the service to be broadcasted to the client
+     *
+     * @return      none.
+     * @see         android.net.wifi.p2p.WifiP2pManager
+     */
     public void registerServerService() {
 
         Map<String, String> record = new HashMap<String, String>();
@@ -343,6 +402,12 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
         startDiscovery();
     }
 
+    /**
+     * Starts peer discovery because services will not broadcast without it.
+     *
+     * @return      none.
+     * @see         android.net.wifi.p2p.WifiP2pManager
+     */
     public void startDiscovery() {
         manager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
 
@@ -359,14 +424,15 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
         });
     }
 
+    /**
+     * Starts the Server that accepts connections.
+     *
+     * @return      none.
+     * @see         android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener
+     */
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo info) {
         Thread handler = null;
-        /*
-         * The group owner accepts connections using a server socket and then spawns a
-         * client socket for every client. This is handled by {@code
-         * GroupOwnerSocketHandler}
-         */
 
         if (info.isGroupOwner) {
             Log.d(TAG, "Connected as group owner");
@@ -382,6 +448,12 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
         }
     }
 
+    /**
+     * Removes devices from the list of connected devices if they are no longer P2P connected.
+     *
+     * @param deviceList The list of devices still connected.
+     * @return      none.
+     */
     public void updateList(WifiP2pDeviceList deviceList) {
         ArrayList<User> users = userlist.getUserList();
         ArrayList<WifiP2pDevice> devices = new ArrayList<WifiP2pDevice>(deviceList.getDeviceList());
@@ -400,6 +472,11 @@ public class TabletActivity extends Activity implements Handler.Callback, WifiP2
         }
     }
 
+    /**
+     * Sends the quit message with the winners and resets the game.
+     *
+     * @return      none
+     */
     public void quitGame(){
         if(startedGame) {
             msgManager.write(("Quit" + userlist.getWinners()).getBytes());
