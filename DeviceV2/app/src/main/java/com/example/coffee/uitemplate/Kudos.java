@@ -46,6 +46,8 @@ public class Kudos extends Activity  implements WifiP2pManager.ChannelListener, 
     private long currentTime = 0;
     private long pastTime = 0;
     private int kudosDelay = 10;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -139,6 +141,12 @@ public class Kudos extends Activity  implements WifiP2pManager.ChannelListener, 
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * handleMessage gets called whenever a meessage gets sent through the socket.
+     * This handleMessage just sends the message to the msgManager
+     * @param  msg The message sent through the socket
+     * @return      void
+     */
     @Override
     public boolean handleMessage(Message msg) {
         switch (msg.what) {

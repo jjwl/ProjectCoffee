@@ -15,6 +15,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+/*
+* This screen is entered after the user connects with the tablet, or after clicking play again after a game
+* just waits for the tablet to start the game
+*
+*/
 
 public class WelcomeScreen extends Activity implements Handler.Callback {
     public static final String TAG = "tableActivity";

@@ -8,6 +8,11 @@ import android.view.View;
 import android.widget.Button;
 
 
+/*
+* This activity is for when the device recognizes it has won.
+* It waits until the user decides if he wants to play again or not.
+*
+ */
 public class WinnerMessage extends Activity {
 
     @Override

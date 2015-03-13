@@ -19,6 +19,7 @@ import java.net.Socket;
 
 /**
  * Created by Sheng-Han on 12/22/2014.
+ * This messageManager handles all the messages that come through the socket.
  */
 public class MsgManager implements Runnable {
     private static MsgManager msgManager = null;
@@ -63,6 +64,10 @@ public class MsgManager implements Runnable {
         return msgManager;
     }
 
+    /**
+     * Starts off the socket between tablet and device.
+     * @return      void
+     */
     @Override
     public void run() {
         try {
@@ -105,6 +110,12 @@ public class MsgManager implements Runnable {
         }
     }
 
+
+    /**
+     * sends a message through the socket to be interpretated by handleMessage on the tablet side.
+     * @param  buffer The message sent through the socket
+     * @return      void
+     */
     public void write(byte[] buffer) {
         try {
             oStream.write(buffer);
@@ -114,7 +125,16 @@ public class MsgManager implements Runnable {
         }
     }
 
-    //Process All Your Messages Here - I pass every Message_read handle_message to here.
+
+    /**
+     * handleMessage gets called whenever a meessage gets sent through the socket.
+     * This handleMessage just sends the message to the msgManager
+     *  Process All Your Messages Here - We pass every Message_read handle_message to here.
+
+     * @param  message The message sent through the socket
+     * @param  current The activity to switch to different
+     * @return      void
+     */
     public boolean handleMsg(Activity current, String message) {
         Log.d(TAG, "Message:" + message);
         if(message.length() > 13 && message.substring(0,13).equals("ContentMaster")){
@@ -154,8 +174,11 @@ public class MsgManager implements Runnable {
     }
 
 
+    /**
+     * Brings down the socket connection.
+     * @return      void
+     */
     public void stop() {
-            // Bring down connection
         try {
             socket.close();
         } catch (IOException e) {
@@ -190,19 +213,39 @@ public class MsgManager implements Runnable {
             }
     }
 
+    /**
+     * Changes to Welcome Screen
+     * @param  activity to swap intents
+     * @return      void
+     */
     public void playAgain(Activity activity) {
        activity.startActivity(new Intent(activity, WelcomeScreen.class));
     }
 
+    /**
+     * Changes to DeviceDiscovery Screen
+     * @param  activity to swap intents
+     * @return      void
+     */
     public void cancelPlay(Activity activity) {
         stop();
         gameStarted = false;
         activity.startActivity(new Intent(activity, DeviceDiscoveryActivity.class));
     }
 
+    /**
+     * Setter for device
+     * @param  device device to set
+     * @return      void
+     */
     public void setDevice(WifiP2pDevice device) {
         this.device = device;
     }
+
+    /**
+     * Getter for device
+     * @return returns the device.
+     */
     public String getDevice() {
         if(device != null) {
             return device.deviceAddress;
