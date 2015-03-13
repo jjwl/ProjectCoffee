@@ -20,21 +20,25 @@ import java.util.ArrayList;
  */
 public class TabletBaseFragment extends Fragment {
 
-    View view;
-    ArrayAdapter<User> listAdapter;
-    Handler handler = null;
-    //MsgManager msgManager = null;
+    View view; //The view.
+    ArrayAdapter<User> listAdapter; //The array adapter; both fragmets use this
+    Handler handler = null; //The handler callback function.
 
     public ArrayAdapter<User> getListAdapter() {
         return listAdapter;
     }
 
+    /**
+     * Refreshes the user list on the UI. Both fragments use this, so this is here.
+     *
+     * @param array The new list of users.
+     */
     public void refreshList(ArrayList<User> array) {
-        //if(listAdapter != null) {
+
             Log.d(TabletActivity.TAG, "Refreshing list...");
             listAdapter.clear();
             listAdapter.addAll(array);
             listAdapter.notifyDataSetChanged();
-        //}
+
     }
 }
