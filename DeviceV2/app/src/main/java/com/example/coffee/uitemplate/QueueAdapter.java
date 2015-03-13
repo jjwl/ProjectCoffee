@@ -11,6 +11,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+/**
+ * Class for creating and populating the list view
+ */
+
 public class QueueAdapter extends BaseAdapter{
 
     Context context;

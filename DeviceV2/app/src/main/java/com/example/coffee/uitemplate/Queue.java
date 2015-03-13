@@ -116,8 +116,10 @@ public class Queue extends ActionBarActivity implements Handler.Callback, YouTub
         toast.show();
     }
 
+    /**
+     * Initializes and configures ChromeCast device discovery.
+     */
     private void initMediaRouter() {
-        //Configure Cast device discovery
         mMediaRouter = MediaRouter.getInstance(getApplicationContext());
         mMediaRouteSelector = new MediaRouteSelector.Builder()
                 .addControlCategory(CastMediaControlIntent.categoryForCast(APP_ID))
@@ -125,10 +127,16 @@ public class Queue extends ActionBarActivity implements Handler.Callback, YouTub
         mMediaRouterCallback = new MediaRouterCallback();
     }
 
+    /**
+     * Creates queue of Video objects
+     */
     public void createContentQueue() {
         contentQueue = new LinkedList<Video>();
     }
 
+    /**
+     * Initializes listeners for the Video queue
+     */
     private void initListeners() {
         this.videoList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -136,22 +144,16 @@ public class Queue extends ActionBarActivity implements Handler.Callback, YouTub
                 String videoId = ((VideoView) view).getVideo().getVideoId();
                 Video vid = ((VideoView) view).getVideo();
                 index = position;
-
-                /*Intent intent = new Intent(getApplicationContext(), VideoDetail.class);
-                intent.putExtra("videoId", videoId);
-                intent.putExtra("videoTitle", vid.getVideoTitle());
-                intent.putExtra("channelTitle", vid.getVideoChannel());
-                intent.putExtra("videoDescription", vid.getVideoDescription());
-                intent.putExtra("thumbnailUrl", vid.getVideoThumbnailUrl());
-                intent.putExtra("timestamp", vid.getTimestamp());
-                startActivityForResult(intent, playingVideo);*/
-
-                //Intent intent = YouTubeStandalonePlayer.createVideoIntent(Queue.this, DeveloperKey.DEVELOPER_KEY, vid.getVideoId());
-                //startActivity(intent);
             }
         });
     }
 
+    /**
+     * Runs after startActivityForResult calls
+     * @param requestCode The request code sent and received for Activity started for result
+     * @param resultCode The returned result code from the Activity started for result
+     * @param data The extra data returned with the Intent
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
@@ -162,30 +164,14 @@ public class Queue extends ActionBarActivity implements Handler.Callback, YouTub
                     receiveVideo(videoToAdd);
                 }
             }
-            /*if (requestCode == playingVideo) {
-                if (data.hasExtra("message")) {
-                    //for now, do nothing
-                    //if queue or something else needs to update after a video ends
-                    //put that logic here
-                    Boolean check = data.getBooleanExtra("updateQueue", false);
-                    if (check && (index != contentQueue.size()-1)) {
-                        index++;
-
-                        Video vid = contentQueue.get(index);
-                        Intent intent = new Intent(getApplicationContext(), VideoDetail.class);
-                        intent.putExtra("videoId", vid.getVideoId());
-                        intent.putExtra("videoTitle", vid.getVideoTitle());
-                        intent.putExtra("channelTitle", vid.getVideoChannel());
-                        intent.putExtra("videoDescription", vid.getVideoDescription());
-                        intent.putExtra("thumbnailUrl", vid.getVideoThumbnailUrl());
-                        intent.putExtra("timestamp", vid.getTimestamp());
-                        startActivityForResult(intent, playingVideo);
-                    }
-                }
-            }*/
         }
     }
 
+    /**
+     * Adds ChromeCast menu button to ActionBar
+     * @param menu The menu on the ActionBar
+     * @return true
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -197,6 +183,10 @@ public class Queue extends ActionBarActivity implements Handler.Callback, YouTub
         return true;
     }
 
+    /**
+     * Saves the videos when the activity is put in a background state
+     * @param outState Bundle with the info when the instance state is saved
+     */
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -244,6 +234,10 @@ public class Queue extends ActionBarActivity implements Handler.Callback, YouTub
         unregisterReceiver(receiver);
     }
 
+    /**
+     * Automatically finds and connects the first ChromeCast device in onRouteAdded
+     * Otherwise allows for selecting and disconnecting from ChromeCast device
+     */
     private class MediaRouterCallback extends MediaRouter.Callback {
 
         @Override
@@ -275,6 +269,10 @@ public class Queue extends ActionBarActivity implements Handler.Callback, YouTub
         }
     }
 
+    /**
+     * Selects ChromeCast device
+     * @param info Route found for connecting to ChromeCast device
+     */
     private void onRouteSelected(MediaRouter.RouteInfo info) {
 
         Log.d(CCTAG, "onRouteSelected: " + info.getName());
@@ -282,6 +280,10 @@ public class Queue extends ActionBarActivity implements Handler.Callback, YouTub
         mMediaRouter.selectRoute(info);
     }
 
+    /**
+     * Initizlies ChromeCast Client Listener
+     * Checks for application state change, volume change and application disconnect
+     */
     private void initCastClientListener() {
         mCastClientListener = new Cast.Listener() {
             @Override
@@ -306,6 +308,9 @@ public class Queue extends ActionBarActivity implements Handler.Callback, YouTub
         };
     }
 
+    /**
+     * Launches Receiver app on ChromeCast device
+     */
     private void launchReceiver() {
         Cast.CastOptions.Builder apiOptionsBuilder = Cast.CastOptions
                 .builder( mSelectedDevice, mCastClientListener );
@@ -321,6 +326,11 @@ public class Queue extends ActionBarActivity implements Handler.Callback, YouTub
         mApiClient.connect();
     }
 
+    /**
+     * Controls connection between device and ChromeCast
+     * Sets up channels for sending messages to and from ChromeCast
+     * @throws IOException
+     */
     private class ConnectionCallbacks implements GoogleApiClient.ConnectionCallbacks {
 
         @Override
@@ -397,6 +407,9 @@ public class Queue extends ActionBarActivity implements Handler.Callback, YouTub
         }
     }
 
+    /**
+     * Container class for creating a VideoChannel that handles messages
+     */
     class VideoChannel implements Cast.MessageReceivedCallback {
         public String getNamespace() {
             return "urn:x-cast:com.coffee.vchannel";
@@ -410,6 +423,10 @@ public class Queue extends ActionBarActivity implements Handler.Callback, YouTub
         }
     }
 
+    /**
+     * Logic for sending messages from device to ChromeCast receiver app
+     * @param message String to be sent to ChromeCast in form of YouTube video Id
+     */
     private void sendMessage(String message) {
         if (mApiClient != null && mVideoChannel != null) {
             try {
@@ -430,6 +447,10 @@ public class Queue extends ActionBarActivity implements Handler.Callback, YouTub
         }
     }
 
+    /**
+     * Attempts to reconnect devices to ChromeCast if disconnected
+     * @param hint Contains information if app exists and is running or not
+     */
     private void reconnectChannels( Bundle hint ) {
         if( ( hint != null ) && hint.getBoolean( Cast.EXTRA_APP_NO_LONGER_RUNNING ) ) {
             //Log.e( TAG, "App is no longer running" );
@@ -445,6 +466,9 @@ public class Queue extends ActionBarActivity implements Handler.Callback, YouTub
         }
     }
 
+    /**
+     * Listener for checking if connection to ChromeCast has failed
+     */
     private class ConnectionFailedListener implements GoogleApiClient.OnConnectionFailedListener {
         @Override
         public void onConnectionFailed( ConnectionResult connectionResult ) {
@@ -452,6 +476,9 @@ public class Queue extends ActionBarActivity implements Handler.Callback, YouTub
         }
     }
 
+    /**
+     * Removes connection with ChromeCast and shuts downs receiver app on ChromeCast
+     */
     private void teardown() {
         if( mApiClient != null ) {
             if( mApplicationStarted ) {
@@ -493,6 +520,11 @@ public class Queue extends ActionBarActivity implements Handler.Callback, YouTub
         toast.show();
     }
 
+    /**
+     * Stores information about received YouTube video from VideoSearch
+     * Sends video Id to ChromeCast receiver
+     * @param videoInfo Contains information of YouTube video from VideoSearch
+     */
     public void receiveVideo(String videoInfo)
     {
         HashMap<String, String> metadata = parseJsonResults(videoInfo);
@@ -547,10 +579,12 @@ public class Queue extends ActionBarActivity implements Handler.Callback, YouTub
 
     }
 
+    /**
+     * Sends message to MsgManager when video is finished
+     * Other logic for when a YouTube video ends on the receiver app goes here
+     */
     @Override
     public void onVideoEnded() {
-        //Emmett put your stuff here
-        //Note: this will run after every video that ends
         Log.d("Queue", "onVideoEnded reached");
         MsgManager.getInstance().write("VideoFinished".getBytes());
     }

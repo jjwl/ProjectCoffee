@@ -38,6 +38,10 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Container class for searching for videos on YouTube
+ */
+
 public class VideoSearch extends Activity {
 
     public static final String TAG = "queueSearch";
@@ -69,6 +73,9 @@ public class VideoSearch extends Activity {
         initListeners();
     }
 
+    /**
+     * Initalizes listeners for Search bar, Search button, and list of YouTube videos
+     */
     private void initListeners() {
         this.searchButton.setOnClickListener(new View.OnClickListener() {
             @Override

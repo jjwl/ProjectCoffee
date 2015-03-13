@@ -11,6 +11,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+/**
+ * Container class creating the layout for YouTube videos in ListView
+ */
+
 public class VideoView extends LinearLayout {
     private Video video;
 
@@ -42,6 +46,10 @@ public class VideoView extends LinearLayout {
         //initListeners();
     }
 
+    /**
+     * Sets video information in the view
+     * @param vid The video with the information to set in the view
+     */
     public void setVideo(Video vid) {
         this.video = vid;
 

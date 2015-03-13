@@ -21,6 +21,10 @@ import com.google.android.youtube.player.YouTubePlayer.Provider;
 import com.google.android.youtube.player.YouTubePlayerFragment;
 import com.google.android.youtube.player.YouTubePlayer.PlayerStateChangeListener;
 
+/**
+ * Plays a YouTube video in a YouTube fragment and handles adding video to the content queue
+ */
+
 public class VideoDetail extends YouTubeFailureRecoveryActivity implements YouTubePlayer.OnInitializedListener {
     public static final String TAG = "VideoDetail";
 
@@ -85,6 +89,10 @@ public class VideoDetail extends YouTubeFailureRecoveryActivity implements YouTu
         youTubePlayerFragment.initialize(DeveloperKey.DEVELOPER_KEY, this);
     }
 
+    /**
+     * Creates alert that pops up when user presses the Add button
+     * Adds video to the queue or cancels adding the video
+     */
     private void createDialog() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setMessage("Add to Queue?");
@@ -161,7 +169,13 @@ public class VideoDetail extends YouTubeFailureRecoveryActivity implements YouTu
         return super.onOptionsItemSelected(item);
     }
 
-        @Override
+    /**
+     * Sets YouTube player listener and starts video when initialization finishes successfully
+     * @param provider YouTube player provider
+     * @param player The YouTube player
+     * @param wasRestored Checks if player was restored or not
+     */
+    @Override
     public void onInitializationSuccess(Provider provider, YouTubePlayer player, boolean wasRestored) {
         if (!wasRestored) {
             this.player = player;
@@ -170,11 +184,18 @@ public class VideoDetail extends YouTubeFailureRecoveryActivity implements YouTu
         }
     }
 
+    /**
+     * Makes a YouTube Player Fragment
+     * @return YouTube Player Fragment
+     */
     @Override
     protected Provider getYouTubePlayerProvider() {
         return (YouTubePlayerFragment) getFragmentManager().findFragmentById(R.id.youtube_fragment);
     }
 
+    /**
+     * Container method for listening to YouTube player state
+     */
     private PlayerStateChangeListener playerStateChangeListener = new PlayerStateChangeListener() {
 
         @Override
